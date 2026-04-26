@@ -1,0 +1,193 @@
+-- [[ MERCURY EXECUTOR UI - REIMAGINED ]] --
+local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+
+-- Configuration & Theme
+local Theme = {
+    Background = Color3.fromRGB(15, 15, 17),
+    Secondary = Color3.fromRGB(22, 22, 26),
+    Accent = Color3.fromRGB(0, 170, 255),
+    Text = Color3.fromRGB(255, 255, 255),
+    TextDark = Color3.fromRGB(180, 180, 180),
+    CornerRadius = UDim.new(0, 12)
+}
+
+-- Utility: Dragging Function
+local function MakeDraggable(frame, parent)
+    parent = parent or frame
+    local dragging, dragInput, dragStart, startPos
+    frame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = parent.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then dragging = false end
+            end)
+        end
+    end)
+    frame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            parent.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+end
+
+-- UI Construction
+local Mercury = Instance.new("ScreenGui")
+Mercury.Name = "MercuryUI"
+Mercury.Parent = (gethui and gethui()) or CoreGui
+Mercury.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = Mercury
+MainFrame.BackgroundColor3 = Theme.Background
+MainFrame.BorderSizePixel = 0
+MainFrame.Position = UDim2.new(0.5, -275, 0.5, -175)
+MainFrame.Size = UDim2.new(0, 550, 0, 350)
+MainFrame.ClipsDescendants = true
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = Theme.CornerRadius
+MainCorner.Parent = MainFrame
+
+-- Sidebar
+local Sidebar = Instance.new("Frame")
+Sidebar.Name = "Sidebar"
+Sidebar.Parent = MainFrame
+Sidebar.BackgroundColor3 = Theme.Secondary
+Sidebar.BorderSizePixel = 0
+Sidebar.Size = UDim2.new(0, 160, 1, 0)
+
+local SidebarCorner = Instance.new("UICorner")
+SidebarCorner.CornerRadius = Theme.CornerRadius
+SidebarCorner.Parent = Sidebar
+
+local Title = Instance.new("TextLabel")
+Title.Name = "Title"
+Title.Parent = Sidebar
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.new(0, 15, 0, 20)
+Title.Size = UDim2.new(0, 130, 0, 30)
+Title.Font = Enum.Font.GothamBold
+Title.Text = "MERCURY"
+Title.TextColor3 = Theme.Accent
+Title.TextSize = 22
+Title.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Container for Content
+local ContentArea = Instance.new("Frame")
+ContentArea.Name = "ContentArea"
+ContentArea.Parent = MainFrame
+ContentArea.BackgroundTransparency = 1
+ContentArea.Position = UDim2.new(0, 170, 0, 10)
+ContentArea.Size = UDim2.new(1, -180, 1, -20)
+
+-- Example Executor Tab
+local ExecutorTab = Instance.new("Frame")
+ExecutorTab.Name = "ExecutorTab"
+ExecutorTab.Parent = ContentArea
+ExecutorTab.BackgroundTransparency = 1
+ExecutorTab.Size = UDim2.new(1, 0, 1, 0)
+
+local EditorFrame = Instance.new("ScrollingFrame")
+EditorFrame.Name = "Editor"
+EditorFrame.Parent = ExecutorTab
+EditorFrame.BackgroundColor3 = Theme.Secondary
+EditorFrame.BorderSizePixel = 0
+EditorFrame.Position = UDim2.new(0, 0, 0, 0)
+EditorFrame.Size = UDim2.new(1, 0, 0.8, 0)
+EditorFrame.ScrollBarThickness = 2
+EditorFrame.CanvasSize = UDim2.new(0, 0, 2, 0)
+
+local EditorCorner = Instance.new("UICorner")
+EditorCorner.CornerRadius = Theme.CornerRadius
+EditorCorner.Parent = EditorFrame
+
+local SourceBox = Instance.new("TextBox")
+SourceBox.Name = "SourceBox"
+SourceBox.Parent = EditorFrame
+SourceBox.Size = UDim2.new(1, -10, 1, 0)
+SourceBox.Position = UDim2.new(0, 10, 0, 10)
+SourceBox.BackgroundTransparency = 1
+SourceBox.ClearTextOnFocus = false
+SourceBox.MultiLine = true
+SourceBox.Text = "-- Welcome to Mercury\nprint('Hello World!')"
+SourceBox.TextColor3 = Theme.Text
+SourceBox.TextSize = 14
+SourceBox.Font = Enum.Font.Code
+SourceBox.TextXAlignment = Enum.TextXAlignment.Left
+SourceBox.TextYAlignment = Enum.TextYAlignment.Top
+
+-- Buttons Row
+local ButtonGrid = Instance.new("Frame")
+ButtonGrid.Parent = ExecutorTab
+ButtonGrid.BackgroundTransparency = 1
+ButtonGrid.Position = UDim2.new(0, 0, 0.85, 0)
+ButtonGrid.Size = UDim2.new(1, 0, 0.15, 0)
+
+local function CreateButton(text, pos, color)
+    local btn = Instance.new("TextButton")
+    btn.Parent = ButtonGrid
+    btn.Size = UDim2.new(0.3, 0, 1, 0)
+    btn.Position = pos
+    btn.BackgroundColor3 = color or Theme.Secondary
+    btn.Font = Enum.Font.GothamBold
+    btn.Text = text
+    btn.TextColor3 = Theme.Text
+    btn.TextSize = 14
+    btn.AutoButtonColor = true
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = btn
+    
+    return btn
+end
+
+local ExecBtn = CreateButton("EXECUTE", UDim2.new(0, 0, 0, 0), Theme.Accent)
+local ClearBtn = CreateButton("CLEAR", UDim2.new(0.35, 0, 0, 0))
+local CopyBtn = CreateButton("COPY", UDim2.new(0.7, 0, 0, 0))
+
+-- Toggle Functionality
+local ToggleBtn = Instance.new("ImageButton")
+ToggleBtn.Name = "MercuryToggle"
+ToggleBtn.Parent = Mercury
+ToggleBtn.Position = UDim2.new(0, 20, 0, 20)
+ToggleBtn.Size = UDim2.new(0, 50, 0, 50)
+ToggleBtn.BackgroundColor3 = Theme.Accent
+ToggleBtn.Image = "rbxassetid://15861930865" -- Keeping your logo ID
+ToggleBtn.Draggable = true
+
+local ToggleCorner = Instance.new("UICorner")
+ToggleCorner.CornerRadius = UDim.new(1, 0)
+ToggleCorner.Parent = ToggleBtn
+
+ToggleBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+end)
+
+-- Button Logic
+ExecBtn.MouseButton1Click:Connect(function()
+    local code = SourceBox.Text
+    local success, err = pcall(loadstring(code))
+    if not success then
+        warn("Mercury Error: " .. tostring(err))
+    end
+end)
+
+ClearBtn.MouseButton1Click:Connect(function()
+    SourceBox.Text = ""
+end)
+
+MakeDraggable(Sidebar, MainFrame)
+
+print("Mercury Loaded Successfully. No key required.")
