@@ -63,7 +63,7 @@ statusLabel.Size = UDim2.new(0, 200, 0, 20)
 statusLabel.Position = UDim2.new(0, 10, 0, 170)
 statusLabel.BackgroundTransparency = 1
 statusLabel.TextColor3 = Color3.new(1,0,0)
-statusLabel.Text = "Idle"
+statusLabel.Text = "ewfjknjkhfwejhwefkhj"
 statusLabel.Parent = frame
 
 modeButton.MouseButton1Click:Connect(function()
