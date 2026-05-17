@@ -9,6 +9,9 @@ local TARGET_NAME = "sitcough"
 local RADIUS = 20
 local FARLANDS = false
 
+local PREDICTION = 0.12
+local UNDERGROUND_OFFSET = -7
+
 local currentTarget
 local originalCFrame
 
@@ -18,52 +21,52 @@ gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 220, 0, 200)
-frame.Position = UDim2.new(0, 20, 0.5, -100)
+frame.Size = UDim2.new(0,220,0,200)
+frame.Position = UDim2.new(0,20,0.5,-100)
 frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
 frame.BorderSizePixel = 0
 frame.Parent = gui
 
 local radiusBox = Instance.new("TextBox")
-radiusBox.Size = UDim2.new(0, 200, 0, 30)
-radiusBox.Position = UDim2.new(0, 10, 0, 10)
-radiusBox.PlaceholderText = "Radius"
+radiusBox.Size = UDim2.new(0,200,0,30)
+radiusBox.Position = UDim2.new(0,10,0,10)
 radiusBox.Text = tostring(RADIUS)
-radiusBox.TextColor3 = Color3.new(1,1,1)
+radiusBox.PlaceholderText = "Radius"
 radiusBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
+radiusBox.TextColor3 = Color3.new(1,1,1)
 radiusBox.Parent = frame
 
 local playerBox = Instance.new("TextBox")
-playerBox.Size = UDim2.new(0, 200, 0, 30)
-playerBox.Position = UDim2.new(0, 10, 0, 50)
-playerBox.PlaceholderText = "Player Name"
+playerBox.Size = UDim2.new(0,200,0,30)
+playerBox.Position = UDim2.new(0,10,0,50)
 playerBox.Text = TARGET_NAME
-playerBox.TextColor3 = Color3.new(1,1,1)
+playerBox.PlaceholderText = "Player Name"
 playerBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
+playerBox.TextColor3 = Color3.new(1,1,1)
 playerBox.Parent = frame
 
 local modeButton = Instance.new("TextButton")
-modeButton.Size = UDim2.new(0, 200, 0, 30)
-modeButton.Position = UDim2.new(0, 10, 0, 90)
+modeButton.Size = UDim2.new(0,200,0,30)
+modeButton.Position = UDim2.new(0,10,0,90)
 modeButton.Text = "Mode: attack"
-modeButton.TextColor3 = Color3.new(1,1,1)
 modeButton.BackgroundColor3 = Color3.fromRGB(60,60,60)
+modeButton.TextColor3 = Color3.new(1,1,1)
 modeButton.Parent = frame
 
 local farlandsButton = Instance.new("TextButton")
-farlandsButton.Size = UDim2.new(0, 200, 0, 30)
-farlandsButton.Position = UDim2.new(0, 10, 0, 130)
+farlandsButton.Size = UDim2.new(0,200,0,30)
+farlandsButton.Position = UDim2.new(0,10,0,130)
 farlandsButton.Text = "Farlands: OFF"
-farlandsButton.TextColor3 = Color3.new(1,1,1)
 farlandsButton.BackgroundColor3 = Color3.fromRGB(60,60,60)
+farlandsButton.TextColor3 = Color3.new(1,1,1)
 farlandsButton.Parent = frame
 
 local statusLabel = Instance.new("TextLabel")
-statusLabel.Size = UDim2.new(0, 200, 0, 20)
-statusLabel.Position = UDim2.new(0, 10, 0, 170)
+statusLabel.Size = UDim2.new(0,200,0,20)
+statusLabel.Position = UDim2.new(0,10,0,170)
 statusLabel.BackgroundTransparency = 1
 statusLabel.TextColor3 = Color3.new(1,0,0)
-statusLabel.Text = "ewfjknjkhfwejhwefkhj"
+statusLabel.Text = "Idle"
 statusLabel.Parent = frame
 
 modeButton.MouseButton1Click:Connect(function()
@@ -99,11 +102,12 @@ playerBox.FocusLost:Connect(function()
 end)
 
 local radiusPart = Instance.new("Part")
+radiusPart.Name = "RadiusPart"
 radiusPart.Anchored = true
 radiusPart.CanCollide = false
 radiusPart.CastShadow = false
-radiusPart.Transparency = 0.7
 radiusPart.Material = Enum.Material.Plastic
+radiusPart.Transparency = 0.7
 radiusPart.Color = Color3.fromRGB(255,0,0)
 radiusPart.Parent = workspace
 
@@ -141,11 +145,11 @@ local function hasSword(model)
 end
 
 local function spamLunge()
-	for i = 1, 6 do
+	for i = 1, 10 do
 		VirtualInputManager:SendMouseButtonEvent(0,0,0,true,game,0)
-		task.wait(0.01)
+		task.wait()
 		VirtualInputManager:SendMouseButtonEvent(0,0,0,false,game,0)
-		task.wait(0.01)
+		task.wait()
 	end
 end
 
@@ -181,7 +185,7 @@ RunService.RenderStepped:Connect(function()
 
 	if showRadius then
 		radiusPart.Transparency = 0.7
-		radiusPart.Size = Vector3.new(RADIUS * 2, RADIUS * 2, RADIUS * 2)
+		radiusPart.Size = Vector3.new(RADIUS * 2,RADIUS * 2,RADIUS * 2)
 		radiusPart.CFrame = defendedRoot.CFrame
 	else
 		radiusPart.Transparency = 1
@@ -204,8 +208,6 @@ RunService.RenderStepped:Connect(function()
 			myRoot.AssemblyLinearVelocity = Vector3.zero
 			myRoot.AssemblyAngularVelocity = Vector3.zero
 
-			task.wait(0.05)
-
 			if originalCFrame then
 				myRoot.CFrame = originalCFrame
 			end
@@ -219,7 +221,7 @@ RunService.RenderStepped:Connect(function()
 			currentTarget = nil
 			originalCFrame = nil
 
-			statusLabel.Text = "Idle2"
+			statusLabel.Text = "Idle"
 
 			return
 		end
@@ -235,10 +237,14 @@ RunService.RenderStepped:Connect(function()
 		myRoot.AssemblyLinearVelocity = Vector3.zero
 		myRoot.AssemblyAngularVelocity = Vector3.zero
 
-		local tpPos = targetRoot.Position + Vector3.new(0,-7.7,0)
+		local predicted =
+			targetRoot.Position +
+			(targetRoot.AssemblyLinearVelocity * PREDICTION)
+
+		local tpPos = predicted + Vector3.new(0,UNDERGROUND_OFFSET,0)
 
 		myRoot.CFrame =
-			CFrame.lookAt(tpPos, targetRoot.Position) *
+			CFrame.lookAt(tpPos,predicted) *
 			CFrame.Angles(0,0,math.rad(90)) *
 			CFrame.new(-1.5,0,0)
 
@@ -258,7 +264,8 @@ RunService.RenderStepped:Connect(function()
 			local targetHum = getHumanoid(target)
 
 			if targetHum.Health > 0 then
-				local distance = (defendedRoot.Position - targetRoot.Position).Magnitude
+				local distance =
+					(defendedRoot.Position - targetRoot.Position).Magnitude
 
 				if distance <= RADIUS then
 					originalCFrame = myRoot.CFrame
