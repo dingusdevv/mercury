@@ -235,7 +235,7 @@ RunService.RenderStepped:Connect(function()
 		myRoot.AssemblyLinearVelocity = Vector3.zero
 		myRoot.AssemblyAngularVelocity = Vector3.zero
 
-		local tpPos = targetRoot.Position + Vector3.new(0,-8.5,0)
+		local tpPos = targetRoot.Position + Vector3.new(0,-8,0)
 
 		myRoot.CFrame =
 			CFrame.lookAt(tpPos, targetRoot.Position) *
