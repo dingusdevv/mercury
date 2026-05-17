@@ -8,8 +8,7 @@ local MODE = "attack"
 local TARGET_NAME = "sitcough"
 local RADIUS = 20
 local FARLANDS = false
-
-local PREDICTION = 0.12
+local PREDICTION = 0.35
 local UNDERGROUND_OFFSET = -7
 
 local currentTarget
@@ -162,7 +161,7 @@ RunService.RenderStepped:Connect(function()
 	end
 
 	if FARLANDS and not currentTarget then
-		myRoot.CFrame = CFrame.new(0,1000000,0)
+		myRoot.CFrame = CFrame.new(0,2000,0)
 		myRoot.AssemblyLinearVelocity = Vector3.zero
 		myRoot.AssemblyAngularVelocity = Vector3.zero
 	end
