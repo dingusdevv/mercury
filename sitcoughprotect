@@ -11,6 +11,17 @@ local player = Players.LocalPlayer
 local originalCFrame
 local currentTarget
 
+local radiusPart = Instance.new("Part")
+radiusPart.Name = "SitcoughRadius"
+radiusPart.Shape = Enum.PartType.Block
+radiusPart.Anchored = true
+radiusPart.CanCollide = false
+radiusPart.Transparency = 0.4
+radiusPart.CastShadow = false
+radiusPart.Color = Color3.fromRGB(255, 0, 0)
+radiusPart.Material = Enum.Material.Plastic
+radiusPart.Parent = workspace
+
 local function getCharacter()
 	return player.Character or player.CharacterAdded:Wait()
 end
@@ -64,14 +75,19 @@ RunService.RenderStepped:Connect(function()
 	local sitcough = getSitcough()
 
 	if not sitcough then
-		return
-	end
-
-	if MODE == "attack" and not sitcoughHasSword(sitcough) then
+		radiusPart.Transparency = 1
 		return
 	end
 
 	local sitRoot = getRoot(sitcough)
+
+	radiusPart.Transparency = 0.7
+	radiusPart.Size = Vector3.new(RADIUS * 2, RADIUS * 2, RADIUS * 2)
+	radiusPart.CFrame = sitRoot.CFrame
+
+	if MODE == "attack" and not sitcoughHasSword(sitcough) then
+		return
+	end
 
 	if currentTarget then
 		local targetRoot = getRoot(currentTarget)
