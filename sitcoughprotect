@@ -10,11 +10,11 @@ local RADIUS = 20
 local FARLANDS = false
 local SPIN = false
 
-local PREDICTION = 0.12
+local PREDICTION = 0.44
 local UNDERGROUND_OFFSET = -7
 
 local spinAngle = 0
-local SPIN_SPEED = 25
+local SPIN_SPEED = 0.6
 
 local currentTarget
 local originalCFrame
@@ -236,7 +236,7 @@ RunService.RenderStepped:Connect(function()
 		myRoot.AssemblyLinearVelocity = Vector3.zero
 		myRoot.AssemblyAngularVelocity = Vector3.zero
 
-		spinAngle += SPIN and SPIN_SPEED or 0
+		spinAngle += SPIN and (math.pi * 10) * SPIN_SPEED or 0
 
 		local vel = targetRoot.AssemblyLinearVelocity
 
@@ -254,10 +254,9 @@ RunService.RenderStepped:Connect(function()
 			basePos = basePos + offset
 		end
 
-		myRoot.CFrame =
-			CFrame.lookAt(basePos,predicted) *
-			CFrame.Angles(0,0,math.rad(90)) *
-			CFrame.new(-1.5,0,0)
+		local cf = CFrame.lookAt(basePos, predicted)
+
+		myRoot.CFrame = cf * CFrame.new(-1.5, 0, 0)
 
 		spamLunge()
 		return
