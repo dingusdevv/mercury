@@ -1,0 +1,148 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+
+local MODE = "attack"
+local TARGET_NAME = "sitcough"
+local RADIUS = 20
+
+local player = Players.LocalPlayer
+
+local originalCFrame
+local currentTarget
+
+local function getCharacter()
+	return player.Character or player.CharacterAdded:Wait()
+end
+
+local function getRoot(model)
+	return model and model:FindFirstChild("HumanoidRootPart")
+end
+
+local function getHumanoid(model)
+	return model and model:FindFirstChildOfClass("Humanoid")
+end
+
+local function getSitcough()
+	for _, v in ipairs(workspace:GetDescendants()) do
+		if v:IsA("Model")
+			and v.Name == TARGET_NAME
+			and getRoot(v)
+			and getHumanoid(v) then
+			return v
+		end
+	end
+end
+
+local function sitcoughHasSword(sitcough)
+	for _, v in ipairs(sitcough:GetChildren()) do
+		if v:IsA("Tool") and v:FindFirstChild("SwordScript") then
+			return true
+		end
+	end
+
+	return false
+end
+
+local function doubleLunge()
+	for i = 1, 2 do
+		VirtualInputManager:SendMouseButtonEvent(0,0,0,true,game,0)
+		task.wait(0.02)
+		VirtualInputManager:SendMouseButtonEvent(0,0,0,false,game,0)
+		task.wait(0.02)
+	end
+end
+
+RunService.RenderStepped:Connect(function()
+	local character = getCharacter()
+	local myRoot = getRoot(character)
+
+	if not myRoot then
+		return
+	end
+
+	local sitcough = getSitcough()
+
+	if not sitcough then
+		return
+	end
+
+	if MODE == "attack" and not sitcoughHasSword(sitcough) then
+		return
+	end
+
+	local sitRoot = getRoot(sitcough)
+
+	if currentTarget then
+		local targetRoot = getRoot(currentTarget)
+		local targetHum = getHumanoid(currentTarget)
+
+		if not targetRoot
+			or not targetHum
+			or targetHum.Health <= 0
+			or (sitRoot.Position - targetRoot.Position).Magnitude > RADIUS then
+
+			myRoot.AssemblyLinearVelocity = Vector3.zero
+			myRoot.AssemblyAngularVelocity = Vector3.zero
+
+			task.wait(0.1)
+
+			if originalCFrame then
+				myRoot.CFrame = originalCFrame
+			end
+
+			for _, part in ipairs(character:GetDescendants()) do
+				if part:IsA("BasePart") then
+					part.CanCollide = true
+				end
+			end
+
+			currentTarget = nil
+			originalCFrame = nil
+
+			return
+		end
+
+		for _, part in ipairs(character:GetDescendants()) do
+			if part:IsA("BasePart") then
+				part.CanCollide = false
+			end
+		end
+
+		myRoot.AssemblyLinearVelocity = Vector3.zero
+		myRoot.AssemblyAngularVelocity = Vector3.zero
+
+		local tpPos = targetRoot.Position + Vector3.new(0, -5.5, 0)
+
+		myRoot.CFrame =
+			CFrame.lookAt(tpPos, targetRoot.Position) *
+			CFrame.Angles(0, 0, math.rad(90)) *
+			CFrame.new(-1.5, 0, 0)
+
+		doubleLunge()
+
+		return
+	end
+
+	for _, target in ipairs(workspace:GetDescendants()) do
+		if target:IsA("Model")
+			and target ~= sitcough
+			and target ~= character
+			and getRoot(target)
+			and getHumanoid(target) then
+
+			local targetRoot = getRoot(target)
+			local targetHum = getHumanoid(target)
+
+			if targetHum.Health > 0 then
+				local distance = (sitRoot.Position - targetRoot.Position).Magnitude
+
+				if distance <= RADIUS then
+					originalCFrame = myRoot.CFrame
+					currentTarget = target
+					break
+				end
+			end
+		end
+	end
+end)
