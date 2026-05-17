@@ -7,6 +7,7 @@ local player = Players.LocalPlayer
 local MODE = "attack"
 local TARGET_NAME = "sitcough"
 local RADIUS = 20
+local FARLANDS = false
 
 local currentTarget
 local originalCFrame
@@ -17,8 +18,8 @@ gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 220, 0, 160)
-frame.Position = UDim2.new(0, 20, 0.5, -80)
+frame.Size = UDim2.new(0, 220, 0, 200)
+frame.Position = UDim2.new(0, 20, 0.5, -100)
 frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
 frame.BorderSizePixel = 0
 frame.Parent = gui
@@ -49,9 +50,17 @@ modeButton.TextColor3 = Color3.new(1,1,1)
 modeButton.BackgroundColor3 = Color3.fromRGB(60,60,60)
 modeButton.Parent = frame
 
+local farlandsButton = Instance.new("TextButton")
+farlandsButton.Size = UDim2.new(0, 200, 0, 30)
+farlandsButton.Position = UDim2.new(0, 10, 0, 130)
+farlandsButton.Text = "Farlands: OFF"
+farlandsButton.TextColor3 = Color3.new(1,1,1)
+farlandsButton.BackgroundColor3 = Color3.fromRGB(60,60,60)
+farlandsButton.Parent = frame
+
 local statusLabel = Instance.new("TextLabel")
 statusLabel.Size = UDim2.new(0, 200, 0, 20)
-statusLabel.Position = UDim2.new(0, 10, 0, 130)
+statusLabel.Position = UDim2.new(0, 10, 0, 170)
 statusLabel.BackgroundTransparency = 1
 statusLabel.TextColor3 = Color3.new(1,0,0)
 statusLabel.Text = "Idle"
@@ -65,6 +74,16 @@ modeButton.MouseButton1Click:Connect(function()
 	end
 
 	modeButton.Text = "Mode: "..MODE
+end)
+
+farlandsButton.MouseButton1Click:Connect(function()
+	FARLANDS = not FARLANDS
+
+	if FARLANDS then
+		farlandsButton.Text = "Farlands: ON"
+	else
+		farlandsButton.Text = "Farlands: OFF"
+	end
 end)
 
 radiusBox.FocusLost:Connect(function()
@@ -82,9 +101,9 @@ end)
 local radiusPart = Instance.new("Part")
 radiusPart.Anchored = true
 radiusPart.CanCollide = false
+radiusPart.CastShadow = false
 radiusPart.Transparency = 0.7
 radiusPart.Material = Enum.Material.Plastic
-radiusPart.CastShadow = false
 radiusPart.Color = Color3.fromRGB(255,0,0)
 radiusPart.Parent = workspace
 
@@ -122,11 +141,11 @@ local function hasSword(model)
 end
 
 local function spamLunge()
-	for i = 1, 4 do
+	for i = 1, 6 do
 		VirtualInputManager:SendMouseButtonEvent(0,0,0,true,game,0)
-		task.wait(0.015)
+		task.wait(0.01)
 		VirtualInputManager:SendMouseButtonEvent(0,0,0,false,game,0)
-		task.wait(0.015)
+		task.wait(0.01)
 	end
 end
 
@@ -136,6 +155,12 @@ RunService.RenderStepped:Connect(function()
 
 	if not myRoot then
 		return
+	end
+
+	if FARLANDS and not currentTarget then
+		myRoot.CFrame = CFrame.new(0,1000000,0)
+		myRoot.AssemblyLinearVelocity = Vector3.zero
+		myRoot.AssemblyAngularVelocity = Vector3.zero
 	end
 
 	local defended = getTargetModel()
@@ -210,7 +235,7 @@ RunService.RenderStepped:Connect(function()
 		myRoot.AssemblyLinearVelocity = Vector3.zero
 		myRoot.AssemblyAngularVelocity = Vector3.zero
 
-		local tpPos = targetRoot.Position + Vector3.new(0,-5.5,0)
+		local tpPos = targetRoot.Position + Vector3.new(0,-8.5,0)
 
 		myRoot.CFrame =
 			CFrame.lookAt(tpPos, targetRoot.Position) *
