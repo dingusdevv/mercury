@@ -9,7 +9,7 @@ local TARGET_NAME = "sitcough"
 local RADIUS = 20
 local FARLANDS = false
 
-local PREDICTION = 0.24
+local PREDICTION = 0.12
 local UNDERGROUND_OFFSET = -7
 
 local currentTarget
@@ -21,8 +21,8 @@ gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0,220,0,200)
-frame.Position = UDim2.new(0,20,0.5,-100)
+frame.Size = UDim2.new(0,220,0,240)
+frame.Position = UDim2.new(0,20,0.5,-120)
 frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
 frame.BorderSizePixel = 0
 frame.Parent = gui
@@ -45,9 +45,18 @@ playerBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
 playerBox.TextColor3 = Color3.new(1,1,1)
 playerBox.Parent = frame
 
+local predictionBox = Instance.new("TextBox")
+predictionBox.Size = UDim2.new(0,200,0,30)
+predictionBox.Position = UDim2.new(0,10,0,90)
+predictionBox.Text = tostring(PREDICTION)
+predictionBox.PlaceholderText = "Prediction"
+predictionBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
+predictionBox.TextColor3 = Color3.new(1,1,1)
+predictionBox.Parent = frame
+
 local modeButton = Instance.new("TextButton")
 modeButton.Size = UDim2.new(0,200,0,30)
-modeButton.Position = UDim2.new(0,10,0,90)
+modeButton.Position = UDim2.new(0,10,0,130)
 modeButton.Text = "Mode: attack"
 modeButton.BackgroundColor3 = Color3.fromRGB(60,60,60)
 modeButton.TextColor3 = Color3.new(1,1,1)
@@ -55,7 +64,7 @@ modeButton.Parent = frame
 
 local farlandsButton = Instance.new("TextButton")
 farlandsButton.Size = UDim2.new(0,200,0,30)
-farlandsButton.Position = UDim2.new(0,10,0,130)
+farlandsButton.Position = UDim2.new(0,10,0,170)
 farlandsButton.Text = "Farlands: OFF"
 farlandsButton.BackgroundColor3 = Color3.fromRGB(60,60,60)
 farlandsButton.TextColor3 = Color3.new(1,1,1)
@@ -63,7 +72,7 @@ farlandsButton.Parent = frame
 
 local statusLabel = Instance.new("TextLabel")
 statusLabel.Size = UDim2.new(0,200,0,20)
-statusLabel.Position = UDim2.new(0,10,0,170)
+statusLabel.Position = UDim2.new(0,10,0,210)
 statusLabel.BackgroundTransparency = 1
 statusLabel.TextColor3 = Color3.new(1,0,0)
 statusLabel.Text = "Idle"
@@ -96,6 +105,13 @@ end)
 
 playerBox.FocusLost:Connect(function()
 	TARGET_NAME = playerBox.Text
+end)
+
+predictionBox.FocusLost:Connect(function()
+	local num = tonumber(predictionBox.Text)
+	if num then
+		PREDICTION = num
+	end
 end)
 
 local radiusPart = Instance.new("Part")
@@ -149,7 +165,6 @@ end
 RunService.RenderStepped:Connect(function()
 	local character = getCharacter()
 	local myRoot = getRoot(character)
-
 	if not myRoot then return end
 
 	if FARLANDS and not currentTarget then
@@ -159,7 +174,6 @@ RunService.RenderStepped:Connect(function()
 	end
 
 	local defended = getTargetModel()
-
 	if not defended then
 		statusLabel.Text = "Target Missing"
 		radiusPart.Transparency = 1
