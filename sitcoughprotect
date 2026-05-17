@@ -9,15 +9,15 @@ local SUBMODE = "smart"
 local TARGET_NAME = "sitcough"
 
 local RADIUS = 20
-local FARLANDS = false
-
-local currentTarget
-local originalCFrame
-
+local currentTarget = nil
 local swarmAngle = 0
 
+--// SAFE character getter
 local function getCharacter()
-	return player.Character or player.CharacterAdded:Wait()
+	local char = player.Character or player.CharacterAdded:Wait()
+	local root = char:WaitForChild("HumanoidRootPart", 5)
+	local hum = char:WaitForChild("Humanoid", 5)
+	return char, root, hum
 end
 
 local function getRoot(model)
@@ -28,21 +28,14 @@ local function getHumanoid(model)
 	return model and model:FindFirstChildOfClass("Humanoid")
 end
 
-local function getTargetModel()
-	for _, v in ipairs(workspace:GetDescendants()) do
-		if v:IsA("Model") and v.Name == TARGET_NAME and getRoot(v) and getHumanoid(v) then
-			return v
+local function getTarget()
+	for _, v in ipairs(workspace:GetChildren()) do
+		if v:IsA("Model") and v.Name == TARGET_NAME then
+			if getRoot(v) and getHumanoid(v) then
+				return v
+			end
 		end
 	end
-end
-
-local function hasSword(model)
-	for _, v in ipairs(model:GetChildren()) do
-		if v:IsA("Tool") and v:FindFirstChild("SwordScript") then
-			return true
-		end
-	end
-	return false
 end
 
 local function lunge()
@@ -54,82 +47,53 @@ local function lunge()
 	end
 end
 
-local function getFlatPrediction(root)
-	local vel = root.AssemblyLinearVelocity
-
-	local horizontal = Vector3.new(vel.X, 0, vel.Z)
-	local speed = horizontal.Magnitude
-
-	local t = math.clamp(speed / 60, 0.08, 0.25)
-
-	return horizontal * t
-end
+--// UI test (if you don’t see this, script is NOT running)
+task.spawn(function()
+	print("AI script loaded successfully")
+end)
 
 RunService.RenderStepped:Connect(function(dt)
-	local character = getCharacter()
-	local myRoot = getRoot(character)
-
+	local char, myRoot = getCharacter()
 	if not myRoot then return end
 
-	local target = getTargetModel()
+	local target = getTarget()
 	if not target then return end
 
 	local targetRoot = getRoot(target)
 	local targetHum = getHumanoid(target)
-
 	if not targetRoot or not targetHum then return end
 
-	if MODE == "attack" and not hasSword(target) then
-		return
-	end
-
-	if currentTarget then
-		local distFromCenter = (targetRoot.Position - myRoot.Position).Magnitude
-
-		if targetHum.Health <= 0 or distFromCenter > RADIUS then
-			currentTarget = nil
+	-- acquire target
+	if not currentTarget then
+		if (targetRoot.Position - myRoot.Position).Magnitude <= RADIUS then
+			currentTarget = target
+		else
 			return
 		end
+	end
 
-		local vel = targetRoot.AssemblyLinearVelocity
-		local speed = vel.Magnitude
-
-		local predicted = targetRoot.Position + getFlatPrediction(targetRoot)
-
-		-- jump control (prevents fling)
-		if math.abs(vel.Y) > 6 then
-			predicted = Vector3.new(predicted.X, targetRoot.Position.Y, predicted.Z)
-		end
-
-		local tpPos
-
-		if SUBMODE == "swarm" then
-			swarmAngle += dt * 6
-
-			local offset = Vector3.new(
-				math.cos(swarmAngle) * (RADIUS - 2),
-				-7,
-				math.sin(swarmAngle) * (RADIUS - 2)
-			)
-
-			tpPos = predicted + offset
-		else
-			tpPos = predicted + Vector3.new(0, -7, 0)
-		end
-
-		local goalCFrame = CFrame.lookAt(tpPos, predicted) * CFrame.Angles(0,0,math.rad(90))
-
-		myRoot.CFrame = myRoot.CFrame:Lerp(goalCFrame, 0.35)
-
-		lunge()
-
+	-- validate target still alive
+	if targetHum.Health <= 0 then
+		currentTarget = nil
 		return
 	end
 
-	local dist = (targetRoot.Position - myRoot.Position).Magnitude
+	local vel = targetRoot.AssemblyLinearVelocity
+	local flatVel = Vector3.new(vel.X, 0, vel.Z)
 
-	if dist <= RADIUS then
-		currentTarget = target
-		originalCFrame = myRoot.CFrame
+	local predictionTime = math.clamp(flatVel.Magnitude / 60, 0.08, 0.22)
+	local predicted = targetRoot.Position + flatVel * predictionTime
+
+	-- stop jump fling
+	if math.abs(vel.Y) > 6 then
+		predicted = Vector3.new(predicted.X, targetRoot.Position.Y, predicted.Z)
 	end
+
+	local tpPos = predicted + Vector3.new(0, -7, 0)
+
+	local goal = CFrame.lookAt(tpPos, predicted) * CFrame.Angles(0,0,math.rad(90))
+
+	myRoot.CFrame = myRoot.CFrame:Lerp(goal, 0.35)
+
+	lunge()
 end)
