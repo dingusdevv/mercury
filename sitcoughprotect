@@ -8,7 +8,7 @@ local MODE = "attack"
 local TARGET_NAME = "sitcough"
 local RADIUS = 20
 local FARLANDS = false
-local PREDICTION = 0.35
+
 local UNDERGROUND_OFFSET = -7
 
 local currentTarget
@@ -144,7 +144,7 @@ local function hasSword(model)
 end
 
 local function spamLunge()
-	for i = 1, 10 do
+	for i = 1, 12 do
 		VirtualInputManager:SendMouseButtonEvent(0,0,0,true,game,0)
 		task.wait()
 		VirtualInputManager:SendMouseButtonEvent(0,0,0,false,game,0)
@@ -160,12 +160,6 @@ RunService.RenderStepped:Connect(function()
 		return
 	end
 
-	if FARLANDS and not currentTarget then
-		myRoot.CFrame = CFrame.new(0,2000,0)
-		myRoot.AssemblyLinearVelocity = Vector3.zero
-		myRoot.AssemblyAngularVelocity = Vector3.zero
-	end
-
 	local defended = getTargetModel()
 
 	if not defended then
@@ -175,6 +169,12 @@ RunService.RenderStepped:Connect(function()
 	end
 
 	local defendedRoot = getRoot(defended)
+
+	if FARLANDS and not currentTarget then
+		myRoot.CFrame = defendedRoot.CFrame + Vector3.new(0,3000,0)
+		myRoot.AssemblyLinearVelocity = Vector3.zero
+		myRoot.AssemblyAngularVelocity = Vector3.zero
+	end
 
 	local showRadius = true
 
@@ -236,11 +236,27 @@ RunService.RenderStepped:Connect(function()
 		myRoot.AssemblyLinearVelocity = Vector3.zero
 		myRoot.AssemblyAngularVelocity = Vector3.zero
 
+		local velocity = targetRoot.AssemblyLinearVelocity
+		local speed = velocity.Magnitude
+
+		local dynamicPrediction =
+			math.clamp(speed / 35, 0.18, 0.75)
+
 		local predicted =
 			targetRoot.Position +
-			(targetRoot.AssemblyLinearVelocity * PREDICTION)
+			(velocity * dynamicPrediction)
 
-		local tpPos = predicted + Vector3.new(0,UNDERGROUND_OFFSET,0)
+		if speed > 3 then
+			predicted += velocity.Unit * 2.5
+		end
+
+		if math.abs(velocity.Y) > 8 then
+			predicted += Vector3.new(0, velocity.Y * 0.15, 0)
+		end
+
+		local tpPos =
+			predicted +
+			Vector3.new(0, UNDERGROUND_OFFSET, 0)
 
 		myRoot.CFrame =
 			CFrame.lookAt(tpPos,predicted) *
@@ -263,8 +279,11 @@ RunService.RenderStepped:Connect(function()
 			local targetHum = getHumanoid(target)
 
 			if targetHum.Health > 0 then
+				local velocity = targetRoot.AssemblyLinearVelocity
+				local futurePos = targetRoot.Position + (velocity * 0.2)
+
 				local distance =
-					(defendedRoot.Position - targetRoot.Position).Magnitude
+					(defendedRoot.Position - futurePos).Magnitude
 
 				if distance <= RADIUS then
 					originalCFrame = myRoot.CFrame
