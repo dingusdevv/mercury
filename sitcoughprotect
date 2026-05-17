@@ -219,7 +219,7 @@ RunService.RenderStepped:Connect(function()
 			currentTarget = nil
 			originalCFrame = nil
 
-			statusLabel.Text = "Idle"
+			statusLabel.Text = "jkewjkhwekhjewf"
 
 			return
 		end
