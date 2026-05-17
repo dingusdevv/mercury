@@ -5,110 +5,16 @@ local VirtualInputManager = game:GetService("VirtualInputManager")
 local player = Players.LocalPlayer
 
 local MODE = "attack"
+local SUBMODE = "smart"
 local TARGET_NAME = "sitcough"
+
 local RADIUS = 20
 local FARLANDS = false
-
-local UNDERGROUND_OFFSET = -7
 
 local currentTarget
 local originalCFrame
 
-local gui = Instance.new("ScreenGui")
-gui.Name = "SitcoughUI"
-gui.ResetOnSpawn = false
-gui.Parent = player:WaitForChild("PlayerGui")
-
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0,220,0,200)
-frame.Position = UDim2.new(0,20,0.5,-100)
-frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
-frame.BorderSizePixel = 0
-frame.Parent = gui
-
-local radiusBox = Instance.new("TextBox")
-radiusBox.Size = UDim2.new(0,200,0,30)
-radiusBox.Position = UDim2.new(0,10,0,10)
-radiusBox.Text = tostring(RADIUS)
-radiusBox.PlaceholderText = "Radius"
-radiusBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
-radiusBox.TextColor3 = Color3.new(1,1,1)
-radiusBox.Parent = frame
-
-local playerBox = Instance.new("TextBox")
-playerBox.Size = UDim2.new(0,200,0,30)
-playerBox.Position = UDim2.new(0,10,0,50)
-playerBox.Text = TARGET_NAME
-playerBox.PlaceholderText = "Player Name"
-playerBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
-playerBox.TextColor3 = Color3.new(1,1,1)
-playerBox.Parent = frame
-
-local modeButton = Instance.new("TextButton")
-modeButton.Size = UDim2.new(0,200,0,30)
-modeButton.Position = UDim2.new(0,10,0,90)
-modeButton.Text = "Mode: attack"
-modeButton.BackgroundColor3 = Color3.fromRGB(60,60,60)
-modeButton.TextColor3 = Color3.new(1,1,1)
-modeButton.Parent = frame
-
-local farlandsButton = Instance.new("TextButton")
-farlandsButton.Size = UDim2.new(0,200,0,30)
-farlandsButton.Position = UDim2.new(0,10,0,130)
-farlandsButton.Text = "Farlands: OFF"
-farlandsButton.BackgroundColor3 = Color3.fromRGB(60,60,60)
-farlandsButton.TextColor3 = Color3.new(1,1,1)
-farlandsButton.Parent = frame
-
-local statusLabel = Instance.new("TextLabel")
-statusLabel.Size = UDim2.new(0,200,0,20)
-statusLabel.Position = UDim2.new(0,10,0,170)
-statusLabel.BackgroundTransparency = 1
-statusLabel.TextColor3 = Color3.new(1,0,0)
-statusLabel.Text = "Idle"
-statusLabel.Parent = frame
-
-modeButton.MouseButton1Click:Connect(function()
-	if MODE == "attack" then
-		MODE = "bodyguard"
-	else
-		MODE = "attack"
-	end
-
-	modeButton.Text = "Mode: "..MODE
-end)
-
-farlandsButton.MouseButton1Click:Connect(function()
-	FARLANDS = not FARLANDS
-
-	if FARLANDS then
-		farlandsButton.Text = "Farlands: ON"
-	else
-		farlandsButton.Text = "Farlands: OFF"
-	end
-end)
-
-radiusBox.FocusLost:Connect(function()
-	local num = tonumber(radiusBox.Text)
-
-	if num then
-		RADIUS = num
-	end
-end)
-
-playerBox.FocusLost:Connect(function()
-	TARGET_NAME = playerBox.Text
-end)
-
-local radiusPart = Instance.new("Part")
-radiusPart.Name = "RadiusPart"
-radiusPart.Anchored = true
-radiusPart.CanCollide = false
-radiusPart.CastShadow = false
-radiusPart.Material = Enum.Material.Plastic
-radiusPart.Transparency = 0.7
-radiusPart.Color = Color3.fromRGB(255,0,0)
-radiusPart.Parent = workspace
+local swarmAngle = 0
 
 local function getCharacter()
 	return player.Character or player.CharacterAdded:Wait()
@@ -124,10 +30,7 @@ end
 
 local function getTargetModel()
 	for _, v in ipairs(workspace:GetDescendants()) do
-		if v:IsA("Model")
-			and v.Name == TARGET_NAME
-			and getRoot(v)
-			and getHumanoid(v) then
+		if v:IsA("Model") and v.Name == TARGET_NAME and getRoot(v) and getHumanoid(v) then
 			return v
 		end
 	end
@@ -139,159 +42,94 @@ local function hasSword(model)
 			return true
 		end
 	end
-
 	return false
 end
 
-local function spamLunge()
-	for i = 1, 12 do
+local function lunge()
+	for i = 1, 2 do
 		VirtualInputManager:SendMouseButtonEvent(0,0,0,true,game,0)
-		task.wait()
+		task.wait(0.02)
 		VirtualInputManager:SendMouseButtonEvent(0,0,0,false,game,0)
-		task.wait()
+		task.wait(0.02)
 	end
 end
 
-RunService.RenderStepped:Connect(function()
+local function getFlatPrediction(root)
+	local vel = root.AssemblyLinearVelocity
+
+	local horizontal = Vector3.new(vel.X, 0, vel.Z)
+	local speed = horizontal.Magnitude
+
+	local t = math.clamp(speed / 60, 0.08, 0.25)
+
+	return horizontal * t
+end
+
+RunService.RenderStepped:Connect(function(dt)
 	local character = getCharacter()
 	local myRoot = getRoot(character)
 
-	if not myRoot then
-		return
-	end
+	if not myRoot then return end
 
-	local defended = getTargetModel()
+	local target = getTargetModel()
+	if not target then return end
 
-	if not defended then
-		statusLabel.Text = "Target Missing"
-		radiusPart.Transparency = 1
-		return
-	end
+	local targetRoot = getRoot(target)
+	local targetHum = getHumanoid(target)
 
-	local defendedRoot = getRoot(defended)
+	if not targetRoot or not targetHum then return end
 
-	if FARLANDS and not currentTarget then
-		myRoot.CFrame = defendedRoot.CFrame + Vector3.new(0,3000,0)
-		myRoot.AssemblyLinearVelocity = Vector3.zero
-		myRoot.AssemblyAngularVelocity = Vector3.zero
-	end
-
-	local showRadius = true
-
-	if MODE == "attack" and not hasSword(defended) then
-		showRadius = false
-	end
-
-	if showRadius then
-		radiusPart.Transparency = 0.7
-		radiusPart.Size = Vector3.new(RADIUS * 2,RADIUS * 2,RADIUS * 2)
-		radiusPart.CFrame = defendedRoot.CFrame
-	else
-		radiusPart.Transparency = 1
-	end
-
-	if MODE == "attack" and not hasSword(defended) then
-		statusLabel.Text = "Waiting For Sword"
+	if MODE == "attack" and not hasSword(target) then
 		return
 	end
 
 	if currentTarget then
-		local targetRoot = getRoot(currentTarget)
-		local targetHum = getHumanoid(currentTarget)
+		local distFromCenter = (targetRoot.Position - myRoot.Position).Magnitude
 
-		if not targetRoot
-			or not targetHum
-			or targetHum.Health <= 0
-			or (defendedRoot.Position - targetRoot.Position).Magnitude > RADIUS then
-
-			myRoot.AssemblyLinearVelocity = Vector3.zero
-			myRoot.AssemblyAngularVelocity = Vector3.zero
-
-			if originalCFrame then
-				myRoot.CFrame = originalCFrame
-			end
-
-			for _, part in ipairs(character:GetDescendants()) do
-				if part:IsA("BasePart") then
-					part.CanCollide = true
-				end
-			end
-
+		if targetHum.Health <= 0 or distFromCenter > RADIUS then
 			currentTarget = nil
-			originalCFrame = nil
-
-			statusLabel.Text = "Idle"
-
 			return
 		end
 
-		statusLabel.Text = "Attacking "..currentTarget.Name
+		local vel = targetRoot.AssemblyLinearVelocity
+		local speed = vel.Magnitude
 
-		for _, part in ipairs(character:GetDescendants()) do
-			if part:IsA("BasePart") then
-				part.CanCollide = false
-			end
+		local predicted = targetRoot.Position + getFlatPrediction(targetRoot)
+
+		-- jump control (prevents fling)
+		if math.abs(vel.Y) > 6 then
+			predicted = Vector3.new(predicted.X, targetRoot.Position.Y, predicted.Z)
 		end
 
-		myRoot.AssemblyLinearVelocity = Vector3.zero
-		myRoot.AssemblyAngularVelocity = Vector3.zero
+		local tpPos
 
-		local velocity = targetRoot.AssemblyLinearVelocity
-		local speed = velocity.Magnitude
+		if SUBMODE == "swarm" then
+			swarmAngle += dt * 6
 
-		local dynamicPrediction =
-			math.clamp(speed / 35, 0.18, 0.75)
+			local offset = Vector3.new(
+				math.cos(swarmAngle) * (RADIUS - 2),
+				-7,
+				math.sin(swarmAngle) * (RADIUS - 2)
+			)
 
-		local predicted =
-			targetRoot.Position +
-			(velocity * dynamicPrediction)
-
-		if speed > 3 then
-			predicted += velocity.Unit * 2.5
+			tpPos = predicted + offset
+		else
+			tpPos = predicted + Vector3.new(0, -7, 0)
 		end
 
-		if math.abs(velocity.Y) > 8 then
-			predicted += Vector3.new(0, velocity.Y * 0.15, 0)
-		end
+		local goalCFrame = CFrame.lookAt(tpPos, predicted) * CFrame.Angles(0,0,math.rad(90))
 
-		local tpPos =
-			predicted +
-			Vector3.new(0, UNDERGROUND_OFFSET, 0)
+		myRoot.CFrame = myRoot.CFrame:Lerp(goalCFrame, 0.35)
 
-		myRoot.CFrame =
-			CFrame.lookAt(tpPos,predicted) *
-			CFrame.Angles(0,0,math.rad(90)) *
-			CFrame.new(-1.5,0,0)
-
-		spamLunge()
+		lunge()
 
 		return
 	end
 
-	for _, target in ipairs(workspace:GetDescendants()) do
-		if target:IsA("Model")
-			and target ~= defended
-			and target ~= character
-			and getRoot(target)
-			and getHumanoid(target) then
+	local dist = (targetRoot.Position - myRoot.Position).Magnitude
 
-			local targetRoot = getRoot(target)
-			local targetHum = getHumanoid(target)
-
-			if targetHum.Health > 0 then
-				local velocity = targetRoot.AssemblyLinearVelocity
-				local futurePos = targetRoot.Position + (velocity * 0.2)
-
-				local distance =
-					(defendedRoot.Position - futurePos).Magnitude
-
-				if distance <= RADIUS then
-					originalCFrame = myRoot.CFrame
-					currentTarget = target
-					statusLabel.Text = "Target Locked"
-					break
-				end
-			end
-		end
+	if dist <= RADIUS then
+		currentTarget = target
+		originalCFrame = myRoot.CFrame
 	end
 end)
