@@ -9,7 +9,7 @@ local TARGET_NAME = "sitcough"
 local RADIUS = 20
 local FARLANDS = false
 
-local PREDICTION = 0.12
+local PREDICTION = 0.67
 local UNDERGROUND_OFFSET = -7
 
 local currentTarget
