@@ -8,9 +8,13 @@ local MODE = "attack"
 local TARGET_NAME = "sitcough"
 local RADIUS = 20
 local FARLANDS = false
+local SPIN = false
 
 local PREDICTION = 0.12
 local UNDERGROUND_OFFSET = -7
+
+local spinAngle = 0
+local SPIN_SPEED = 25
 
 local currentTarget
 local originalCFrame
@@ -21,8 +25,8 @@ gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0,220,0,240)
-frame.Position = UDim2.new(0,20,0.5,-120)
+frame.Size = UDim2.new(0,220,0,280)
+frame.Position = UDim2.new(0,20,0.5,-140)
 frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
 frame.BorderSizePixel = 0
 frame.Parent = gui
@@ -70,9 +74,17 @@ farlandsButton.BackgroundColor3 = Color3.fromRGB(60,60,60)
 farlandsButton.TextColor3 = Color3.new(1,1,1)
 farlandsButton.Parent = frame
 
+local spinButton = Instance.new("TextButton")
+spinButton.Size = UDim2.new(0,200,0,30)
+spinButton.Position = UDim2.new(0,10,0,210)
+spinButton.Text = "Spin: OFF"
+spinButton.BackgroundColor3 = Color3.fromRGB(60,60,60)
+spinButton.TextColor3 = Color3.new(1,1,1)
+spinButton.Parent = frame
+
 local statusLabel = Instance.new("TextLabel")
 statusLabel.Size = UDim2.new(0,200,0,20)
-statusLabel.Position = UDim2.new(0,10,0,210)
+statusLabel.Position = UDim2.new(0,10,0,250)
 statusLabel.BackgroundTransparency = 1
 statusLabel.TextColor3 = Color3.new(1,0,0)
 statusLabel.Text = "Idle"
@@ -89,18 +101,17 @@ end)
 
 farlandsButton.MouseButton1Click:Connect(function()
 	FARLANDS = not FARLANDS
-	if FARLANDS then
-		farlandsButton.Text = "Farlands: ON"
-	else
-		farlandsButton.Text = "Farlands: OFF"
-	end
+	farlandsButton.Text = FARLANDS and "Farlands: ON" or "Farlands: OFF"
+end)
+
+spinButton.MouseButton1Click:Connect(function()
+	SPIN = not SPIN
+	spinButton.Text = SPIN and "Spin: ON" or "Spin: OFF"
 end)
 
 radiusBox.FocusLost:Connect(function()
 	local num = tonumber(radiusBox.Text)
-	if num then
-		RADIUS = num
-	end
+	if num then RADIUS = num end
 end)
 
 playerBox.FocusLost:Connect(function()
@@ -109,9 +120,7 @@ end)
 
 predictionBox.FocusLost:Connect(function()
 	local num = tonumber(predictionBox.Text)
-	if num then
-		PREDICTION = num
-	end
+	if num then PREDICTION = num end
 end)
 
 local radiusPart = Instance.new("Part")
@@ -167,12 +176,6 @@ RunService.RenderStepped:Connect(function()
 	local myRoot = getRoot(character)
 	if not myRoot then return end
 
-	if FARLANDS and not currentTarget then
-		myRoot.CFrame = CFrame.new(0,1000000,0)
-		myRoot.AssemblyLinearVelocity = Vector3.zero
-		myRoot.AssemblyAngularVelocity = Vector3.zero
-	end
-
 	local defended = getTargetModel()
 	if not defended then
 		statusLabel.Text = "Target Missing"
@@ -181,6 +184,12 @@ RunService.RenderStepped:Connect(function()
 	end
 
 	local defendedRoot = getRoot(defended)
+
+	if FARLANDS and not currentTarget then
+		myRoot.CFrame = CFrame.new(defendedRoot.Position + Vector3.new(0,2000,0))
+		myRoot.AssemblyLinearVelocity = Vector3.zero
+		myRoot.AssemblyAngularVelocity = Vector3.zero
+	end
 
 	if MODE == "attack" and not hasSword(defended) then
 		statusLabel.Text = "Waiting For Sword"
@@ -227,6 +236,8 @@ RunService.RenderStepped:Connect(function()
 		myRoot.AssemblyLinearVelocity = Vector3.zero
 		myRoot.AssemblyAngularVelocity = Vector3.zero
 
+		spinAngle += SPIN and SPIN_SPEED or 0
+
 		local vel = targetRoot.AssemblyLinearVelocity
 
 		local predicted = Vector3.new(
@@ -235,10 +246,16 @@ RunService.RenderStepped:Connect(function()
 			targetRoot.Position.Z + vel.Z * PREDICTION
 		)
 
-		local tpPos = predicted + Vector3.new(0,UNDERGROUND_OFFSET,0)
+		local basePos = predicted + Vector3.new(0,UNDERGROUND_OFFSET,0)
+
+		if SPIN then
+			local radius = 3
+			local offset = Vector3.new(math.cos(spinAngle) * radius, 0, math.sin(spinAngle) * radius)
+			basePos = basePos + offset
+		end
 
 		myRoot.CFrame =
-			CFrame.lookAt(tpPos,predicted) *
+			CFrame.lookAt(basePos,predicted) *
 			CFrame.Angles(0,0,math.rad(90)) *
 			CFrame.new(-1.5,0,0)
 
