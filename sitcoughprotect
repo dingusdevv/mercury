@@ -10,11 +10,11 @@ local RADIUS = 20
 local FARLANDS = false
 local SPIN = false
 
-local PREDICTION = 0.44
+local PREDICTION = 0.52
 local UNDERGROUND_OFFSET = -7
 
 local spinAngle = 0
-local SPIN_SPEED = 0.6
+local SPIN_SPEED = 0.25
 
 local currentTarget
 local originalCFrame
@@ -35,67 +35,47 @@ local radiusBox = Instance.new("TextBox")
 radiusBox.Size = UDim2.new(0,200,0,30)
 radiusBox.Position = UDim2.new(0,10,0,10)
 radiusBox.Text = tostring(RADIUS)
-radiusBox.PlaceholderText = "Radius"
-radiusBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
-radiusBox.TextColor3 = Color3.new(1,1,1)
 radiusBox.Parent = frame
 
 local playerBox = Instance.new("TextBox")
 playerBox.Size = UDim2.new(0,200,0,30)
 playerBox.Position = UDim2.new(0,10,0,50)
 playerBox.Text = TARGET_NAME
-playerBox.PlaceholderText = "Player Name"
-playerBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
-playerBox.TextColor3 = Color3.new(1,1,1)
 playerBox.Parent = frame
 
 local predictionBox = Instance.new("TextBox")
 predictionBox.Size = UDim2.new(0,200,0,30)
 predictionBox.Position = UDim2.new(0,10,0,90)
 predictionBox.Text = tostring(PREDICTION)
-predictionBox.PlaceholderText = "Prediction"
-predictionBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
-predictionBox.TextColor3 = Color3.new(1,1,1)
 predictionBox.Parent = frame
 
 local modeButton = Instance.new("TextButton")
 modeButton.Size = UDim2.new(0,200,0,30)
 modeButton.Position = UDim2.new(0,10,0,130)
 modeButton.Text = "Mode: attack"
-modeButton.BackgroundColor3 = Color3.fromRGB(60,60,60)
-modeButton.TextColor3 = Color3.new(1,1,1)
 modeButton.Parent = frame
 
 local farlandsButton = Instance.new("TextButton")
 farlandsButton.Size = UDim2.new(0,200,0,30)
 farlandsButton.Position = UDim2.new(0,10,0,170)
 farlandsButton.Text = "Farlands: OFF"
-farlandsButton.BackgroundColor3 = Color3.fromRGB(60,60,60)
-farlandsButton.TextColor3 = Color3.new(1,1,1)
 farlandsButton.Parent = frame
 
 local spinButton = Instance.new("TextButton")
 spinButton.Size = UDim2.new(0,200,0,30)
 spinButton.Position = UDim2.new(0,10,0,210)
 spinButton.Text = "Spin: OFF"
-spinButton.BackgroundColor3 = Color3.fromRGB(60,60,60)
-spinButton.TextColor3 = Color3.new(1,1,1)
 spinButton.Parent = frame
 
 local statusLabel = Instance.new("TextLabel")
 statusLabel.Size = UDim2.new(0,200,0,20)
 statusLabel.Position = UDim2.new(0,10,0,250)
 statusLabel.BackgroundTransparency = 1
-statusLabel.TextColor3 = Color3.new(1,0,0)
 statusLabel.Text = "Idle"
 statusLabel.Parent = frame
 
 modeButton.MouseButton1Click:Connect(function()
-	if MODE == "attack" then
-		MODE = "bodyguard"
-	else
-		MODE = "attack"
-	end
+	MODE = MODE == "attack" and "bodyguard" or "attack"
 	modeButton.Text = "Mode: "..MODE
 end)
 
@@ -110,8 +90,8 @@ spinButton.MouseButton1Click:Connect(function()
 end)
 
 radiusBox.FocusLost:Connect(function()
-	local num = tonumber(radiusBox.Text)
-	if num then RADIUS = num end
+	local n = tonumber(radiusBox.Text)
+	if n then RADIUS = n end
 end)
 
 playerBox.FocusLost:Connect(function()
@@ -119,30 +99,26 @@ playerBox.FocusLost:Connect(function()
 end)
 
 predictionBox.FocusLost:Connect(function()
-	local num = tonumber(predictionBox.Text)
-	if num then PREDICTION = num end
+	local n = tonumber(predictionBox.Text)
+	if n then PREDICTION = n end
 end)
 
 local radiusPart = Instance.new("Part")
-radiusPart.Name = "RadiusPart"
 radiusPart.Anchored = true
 radiusPart.CanCollide = false
-radiusPart.CastShadow = false
-radiusPart.Material = Enum.Material.Plastic
-radiusPart.Transparency = 0.7
-radiusPart.Color = Color3.fromRGB(255,0,0)
+radiusPart.Transparency = 1
 radiusPart.Parent = workspace
 
 local function getCharacter()
 	return player.Character or player.CharacterAdded:Wait()
 end
 
-local function getRoot(model)
-	return model and model:FindFirstChild("HumanoidRootPart")
+local function getRoot(m)
+	return m and m:FindFirstChild("HumanoidRootPart")
 end
 
-local function getHumanoid(model)
-	return model and model:FindFirstChildOfClass("Humanoid")
+local function getHumanoid(m)
+	return m and m:FindFirstChildOfClass("Humanoid")
 end
 
 local function getTargetModel()
@@ -163,7 +139,7 @@ local function hasSword(model)
 end
 
 local function spamLunge()
-	for i = 1, 10 do
+	for i = 1, 6 do
 		VirtualInputManager:SendMouseButtonEvent(0,0,0,true,game,0)
 		task.wait()
 		VirtualInputManager:SendMouseButtonEvent(0,0,0,false,game,0)
@@ -172,107 +148,82 @@ local function spamLunge()
 end
 
 RunService.RenderStepped:Connect(function()
-	local character = getCharacter()
-	local myRoot = getRoot(character)
-	if not myRoot then return end
+	local char = getCharacter()
+	local root = getRoot(char)
+	if not root then return end
 
-	local defended = getTargetModel()
-	if not defended then
+	local target = getTargetModel()
+	if not target then
 		statusLabel.Text = "Target Missing"
-		radiusPart.Transparency = 1
 		return
 	end
 
-	local defendedRoot = getRoot(defended)
+	local targetRoot = getRoot(target)
 
 	if FARLANDS and not currentTarget then
-		myRoot.CFrame = CFrame.new(defendedRoot.Position + Vector3.new(0,2000,0))
-		myRoot.AssemblyLinearVelocity = Vector3.zero
-		myRoot.AssemblyAngularVelocity = Vector3.zero
+		root.CFrame = CFrame.new(targetRoot.Position + Vector3.new(0,2000,0))
 	end
 
-	if MODE == "attack" and not hasSword(defended) then
-		statusLabel.Text = "Waiting For Sword"
-		radiusPart.Transparency = 1
+	if MODE == "attack" and not hasSword(target) then
+		statusLabel.Text = "Waiting Sword"
 		return
 	end
 
-	radiusPart.Transparency = 0.7
-	radiusPart.Size = Vector3.new(RADIUS * 2,RADIUS * 2,RADIUS * 2)
-	radiusPart.CFrame = defendedRoot.CFrame
+	radiusPart.Size = Vector3.new(RADIUS*2,RADIUS*2,RADIUS*2)
+	radiusPart.CFrame = targetRoot.CFrame
 
 	if currentTarget then
-		local targetRoot = getRoot(currentTarget)
-		local targetHum = getHumanoid(currentTarget)
+		local tRoot = getRoot(currentTarget)
+		local hum = getHumanoid(currentTarget)
 
-		if not targetRoot or not targetHum or targetHum.Health <= 0 or (defendedRoot.Position - targetRoot.Position).Magnitude > RADIUS then
-			myRoot.AssemblyLinearVelocity = Vector3.zero
-			myRoot.AssemblyAngularVelocity = Vector3.zero
-
-			if originalCFrame then
-				myRoot.CFrame = originalCFrame
-			end
-
-			for _, part in ipairs(character:GetDescendants()) do
-				if part:IsA("BasePart") then
-					part.CanCollide = true
-				end
-			end
-
+		if not tRoot or not hum or hum.Health <= 0 then
 			currentTarget = nil
 			originalCFrame = nil
 			statusLabel.Text = "Idle"
 			return
 		end
 
-		statusLabel.Text = "Attacking "..currentTarget.Name
-
-		for _, part in ipairs(character:GetDescendants()) do
-			if part:IsA("BasePart") then
-				part.CanCollide = false
-			end
-		end
-
-		myRoot.AssemblyLinearVelocity = Vector3.zero
-		myRoot.AssemblyAngularVelocity = Vector3.zero
-
-		spinAngle += SPIN and (math.pi * 10) * SPIN_SPEED or 0
-
-		local vel = targetRoot.AssemblyLinearVelocity
+		local vel = tRoot.AssemblyLinearVelocity
 
 		local predicted = Vector3.new(
-			targetRoot.Position.X + vel.X * PREDICTION,
-			targetRoot.Position.Y,
-			targetRoot.Position.Z + vel.Z * PREDICTION
+			tRoot.Position.X + vel.X * PREDICTION,
+			tRoot.Position.Y,
+			tRoot.Position.Z + vel.Z * PREDICTION
 		)
 
-		local basePos = predicted + Vector3.new(0,UNDERGROUND_OFFSET,0)
+		local basePos = predicted + Vector3.new(0, UNDERGROUND_OFFSET, 0)
 
+		spinAngle += SPIN and SPIN_SPEED or 0
+
+		local spinOffset = Vector3.new(0,0,0)
 		if SPIN then
-			local radius = 3
-			local offset = Vector3.new(math.cos(spinAngle) * radius, 0, math.sin(spinAngle) * radius)
-			basePos = basePos + offset
+			local r = 3
+			spinOffset = Vector3.new(math.cos(spinAngle)*r, 0, math.sin(spinAngle)*r)
 		end
 
-		local cf = CFrame.lookAt(basePos, predicted)
+		local finalPos = basePos + spinOffset
 
-		myRoot.CFrame = cf * CFrame.new(-1.5, 0, 0)
+		local face = (predicted - finalPos)
+		if face.Magnitude == 0 then
+			face = root.CFrame.LookVector
+		end
+
+		local cf = CFrame.lookAt(finalPos, finalPos + face.Unit)
+
+		root.CFrame = cf * CFrame.Angles(0, spinAngle, 0)
 
 		spamLunge()
 		return
 	end
 
-	for _, target in ipairs(workspace:GetDescendants()) do
-		if target:IsA("Model") and target ~= defended and target ~= character and getRoot(target) and getHumanoid(target) then
-			local targetHum = getHumanoid(target)
-			if targetHum.Health > 0 then
-				local targetRoot = getRoot(target)
-				local distance = (defendedRoot.Position - targetRoot.Position).Magnitude
-
-				if distance <= RADIUS then
-					originalCFrame = myRoot.CFrame
-					currentTarget = target
-					statusLabel.Text = "Target Locked"
+	for _, v in ipairs(workspace:GetDescendants()) do
+		if v:IsA("Model") and v ~= char and getRoot(v) and getHumanoid(v) then
+			local hum = getHumanoid(v)
+			if hum.Health > 0 then
+				local d = (targetRoot.Position - getRoot(v).Position).Magnitude
+				if d <= RADIUS then
+					currentTarget = v
+					statusLabel.Text = "Locked"
 					break
 				end
 			end
