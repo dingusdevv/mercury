@@ -1,0 +1,926 @@
+-- Gui to Lua
+-- Version: 3.2
+
+-- Instances:
+
+local mercuryGUI = Instance.new("ScreenGui")
+local harked = Instance.new("Frame")
+local TextLabel = Instance.new("TextLabel")
+local TextBox = Instance.new("TextBox")
+local ScrollingFrame = Instance.new("ScrollingFrame")
+local Delete = Instance.new("TextButton")
+local Bald = Instance.new("TextButton")
+local Kill = Instance.new("TextButton")
+local Naked = Instance.new("TextButton")
+local Ban = Instance.new("TextButton")
+local Kick = Instance.new("TextButton")
+local Ragdoll = Instance.new("TextButton")
+local Noanims = Instance.new("TextButton")
+local notools = Instance.new("TextButton")
+local nolimbs = Instance.new("TextButton")
+local punish = Instance.new("TextButton")
+local Spawnship = Instance.new("TextButton")
+local SpawnshipLoop = Instance.new("TextButton")
+local ws = Instance.new("TextButton")
+local wspow = Instance.new("TextButton")
+local Spawnspace = Instance.new("TextButton")
+local Spawnspaceloop = Instance.new("TextButton")
+local wslight = Instance.new("TextButton")
+local wsgui = Instance.new("TextButton")
+local wstools = Instance.new("TextButton")
+
+--Properties:
+
+mercuryGUI.Name = "mercuryGUI"
+mercuryGUI.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+mercuryGUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+harked.Name = "harked"
+harked.Parent = mercuryGUI
+harked.BackgroundColor3 = Color3.fromRGB(137, 138, 138)
+harked.BackgroundTransparency = 0.400
+harked.BorderColor3 = Color3.fromRGB(255, 255, 255)
+harked.BorderSizePixel = 3
+harked.Position = UDim2.new(0.0377532244, 0, 0.181978792, 0)
+harked.Size = UDim2.new(0, 232, 0, 330)
+
+TextLabel.Parent = harked
+TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.BackgroundTransparency = 1.000
+TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel.BorderSizePixel = 0
+TextLabel.Position = UDim2.new(0.068965517, 0, 0.0212121215, 0)
+TextLabel.Size = UDim2.new(0, 200, 0, 50)
+TextLabel.Font = Enum.Font.SourceSans
+TextLabel.Text = "Harked Mercury"
+TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.TextScaled = true
+TextLabel.TextSize = 14.000
+TextLabel.TextWrapped = true
+
+TextBox.Parent = harked
+TextBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TextBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextBox.BorderSizePixel = 0
+TextBox.Position = UDim2.new(0.068965517, 0, 0.854545474, 0)
+TextBox.Size = UDim2.new(0, 200, 0, 39)
+TextBox.Font = Enum.Font.SourceSans
+TextBox.PlaceholderText = "Player name"
+TextBox.Text = ""
+TextBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+TextBox.TextSize = 14.000
+
+ScrollingFrame.Parent = harked
+ScrollingFrame.Active = true
+ScrollingFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ScrollingFrame.BackgroundTransparency = 1.000
+ScrollingFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ScrollingFrame.BorderSizePixel = 0
+ScrollingFrame.Position = UDim2.new(0.068965517, 0, 0.172727272, 0)
+ScrollingFrame.Size = UDim2.new(0, 203, 0, 204)
+ScrollingFrame.CanvasPosition = Vector2.new(0, 200)
+
+Delete.Name = "Delete"
+Delete.Parent = ScrollingFrame
+Delete.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Delete.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Delete.BorderSizePixel = 0
+Delete.Position = UDim2.new(0.0591133013, 0, 0.0303030312, 0)
+Delete.Size = UDim2.new(0, 82, 0, 28)
+Delete.Font = Enum.Font.SourceSans
+Delete.Text = "Delete Tool"
+Delete.TextColor3 = Color3.fromRGB(0, 0, 0)
+Delete.TextSize = 14.000
+
+Bald.Name = "Bald"
+Bald.Parent = ScrollingFrame
+Bald.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Bald.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Bald.BorderSizePixel = 0
+Bald.Position = UDim2.new(0.511083722, 0, 0.0303030312, 0)
+Bald.Size = UDim2.new(0, 82, 0, 28)
+Bald.Font = Enum.Font.SourceSans
+Bald.Text = "Bald"
+Bald.TextColor3 = Color3.fromRGB(0, 0, 0)
+Bald.TextSize = 14.000
+
+Kill.Name = "Kill"
+Kill.Parent = ScrollingFrame
+Kill.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Kill.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Kill.BorderSizePixel = 0
+Kill.Position = UDim2.new(0.0591133013, 0, 0.0909090936, 0)
+Kill.Size = UDim2.new(0, 82, 0, 28)
+Kill.Font = Enum.Font.SourceSans
+Kill.Text = "Kill"
+Kill.TextColor3 = Color3.fromRGB(0, 0, 0)
+Kill.TextSize = 14.000
+
+Naked.Name = "Naked"
+Naked.Parent = ScrollingFrame
+Naked.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Naked.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Naked.BorderSizePixel = 0
+Naked.Position = UDim2.new(0.507389188, 0, 0.0909090936, 0)
+Naked.Size = UDim2.new(0, 82, 0, 28)
+Naked.Font = Enum.Font.SourceSans
+Naked.Text = "Naked"
+Naked.TextColor3 = Color3.fromRGB(0, 0, 0)
+Naked.TextSize = 14.000
+
+Ban.Name = "Ban"
+Ban.Parent = ScrollingFrame
+Ban.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Ban.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Ban.BorderSizePixel = 0
+Ban.Position = UDim2.new(0.507389188, 0, 0.151515156, 0)
+Ban.Size = UDim2.new(0, 82, 0, 28)
+Ban.Font = Enum.Font.SourceSans
+Ban.Text = "Ban"
+Ban.TextColor3 = Color3.fromRGB(0, 0, 0)
+Ban.TextSize = 14.000
+
+Kick.Name = "Kick"
+Kick.Parent = ScrollingFrame
+Kick.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Kick.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Kick.BorderSizePixel = 0
+Kick.Position = UDim2.new(0.0591133013, 0, 0.151515156, 0)
+Kick.Size = UDim2.new(0, 82, 0, 28)
+Kick.Font = Enum.Font.SourceSans
+Kick.Text = "Kick"
+Kick.TextColor3 = Color3.fromRGB(0, 0, 0)
+Kick.TextSize = 14.000
+
+Ragdoll.Name = "Ragdoll"
+Ragdoll.Parent = ScrollingFrame
+Ragdoll.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Ragdoll.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Ragdoll.BorderSizePixel = 0
+Ragdoll.Position = UDim2.new(0.507389188, 0, 0.209090903, 0)
+Ragdoll.Size = UDim2.new(0, 82, 0, 28)
+Ragdoll.Font = Enum.Font.SourceSans
+Ragdoll.Text = "Ragdoll"
+Ragdoll.TextColor3 = Color3.fromRGB(0, 0, 0)
+Ragdoll.TextSize = 14.000
+
+Noanims.Name = "Noanims"
+Noanims.Parent = ScrollingFrame
+Noanims.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Noanims.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Noanims.BorderSizePixel = 0
+Noanims.Position = UDim2.new(0.0591133013, 0, 0.209090903, 0)
+Noanims.Size = UDim2.new(0, 82, 0, 28)
+Noanims.Font = Enum.Font.SourceSans
+Noanims.Text = "NoAnims"
+Noanims.TextColor3 = Color3.fromRGB(0, 0, 0)
+Noanims.TextSize = 14.000
+
+notools.Name = "notools"
+notools.Parent = ScrollingFrame
+notools.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+notools.BorderColor3 = Color3.fromRGB(0, 0, 0)
+notools.BorderSizePixel = 0
+notools.Position = UDim2.new(0.0591133013, 0, 0.266666681, 0)
+notools.Size = UDim2.new(0, 82, 0, 28)
+notools.Font = Enum.Font.SourceSans
+notools.Text = "NoTools"
+notools.TextColor3 = Color3.fromRGB(0, 0, 0)
+notools.TextSize = 14.000
+
+nolimbs.Name = "nolimbs"
+nolimbs.Parent = ScrollingFrame
+nolimbs.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+nolimbs.BorderColor3 = Color3.fromRGB(0, 0, 0)
+nolimbs.BorderSizePixel = 0
+nolimbs.Position = UDim2.new(0.507389188, 0, 0.266666681, 0)
+nolimbs.Size = UDim2.new(0, 82, 0, 28)
+nolimbs.Font = Enum.Font.SourceSans
+nolimbs.Text = "NoLimbs"
+nolimbs.TextColor3 = Color3.fromRGB(0, 0, 0)
+nolimbs.TextSize = 14.000
+
+punish.Name = "punish"
+punish.Parent = ScrollingFrame
+punish.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+punish.BorderColor3 = Color3.fromRGB(0, 0, 0)
+punish.BorderSizePixel = 0
+punish.Position = UDim2.new(0.0541872643, 0, 0.5, 0)
+punish.Size = UDim2.new(0, 82, 0, 28)
+punish.Font = Enum.Font.SourceSans
+punish.Text = "Punish"
+punish.TextColor3 = Color3.fromRGB(0, 0, 0)
+punish.TextSize = 14.000
+
+Spawnship.Name = "Spawnship"
+Spawnship.Parent = ScrollingFrame
+Spawnship.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Spawnship.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Spawnship.BorderSizePixel = 0
+Spawnship.Position = UDim2.new(0.0591133013, 0, 0.381818175, 0)
+Spawnship.Size = UDim2.new(0, 82, 0, 28)
+Spawnship.Font = Enum.Font.SourceSans
+Spawnship.Text = "Spawn Ship"
+Spawnship.TextColor3 = Color3.fromRGB(0, 0, 0)
+Spawnship.TextSize = 14.000
+
+SpawnshipLoop.Name = "SpawnshipLoop"
+SpawnshipLoop.Parent = ScrollingFrame
+SpawnshipLoop.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SpawnshipLoop.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SpawnshipLoop.BorderSizePixel = 0
+SpawnshipLoop.Position = UDim2.new(0.507389188, 0, 0.381818175, 0)
+SpawnshipLoop.Size = UDim2.new(0, 82, 0, 28)
+SpawnshipLoop.Font = Enum.Font.SourceSans
+SpawnshipLoop.Text = "Spawn Ship Loop"
+SpawnshipLoop.TextColor3 = Color3.fromRGB(0, 0, 0)
+SpawnshipLoop.TextSize = 14.000
+
+ws.Name = "ws"
+ws.Parent = ScrollingFrame
+ws.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ws.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ws.BorderSizePixel = 0
+ws.Position = UDim2.new(0.0591133013, 0, 0.322727263, 0)
+ws.Size = UDim2.new(0, 82, 0, 28)
+ws.Font = Enum.Font.SourceSans
+ws.Text = "Destroy (weak)"
+ws.TextColor3 = Color3.fromRGB(0, 0, 0)
+ws.TextSize = 14.000
+
+wspow.Name = "wspow"
+wspow.Parent = ScrollingFrame
+wspow.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+wspow.BorderColor3 = Color3.fromRGB(0, 0, 0)
+wspow.BorderSizePixel = 0
+wspow.Position = UDim2.new(0.507389128, 0, 0.322727263, 0)
+wspow.Size = UDim2.new(0, 82, 0, 28)
+wspow.Font = Enum.Font.SourceSans
+wspow.Text = "Destroy (strong)"
+wspow.TextColor3 = Color3.fromRGB(0, 0, 0)
+wspow.TextSize = 14.000
+
+Spawnspace.Name = "Spawnspace"
+Spawnspace.Parent = ScrollingFrame
+Spawnspace.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Spawnspace.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Spawnspace.BorderSizePixel = 0
+Spawnspace.Position = UDim2.new(0.0591132976, 0, 0.440909088, 0)
+Spawnspace.Size = UDim2.new(0, 82, 0, 28)
+Spawnspace.Font = Enum.Font.SourceSans
+Spawnspace.Text = "Space Buggy"
+Spawnspace.TextColor3 = Color3.fromRGB(0, 0, 0)
+Spawnspace.TextSize = 14.000
+
+Spawnspaceloop.Name = "Spawnspaceloop"
+Spawnspaceloop.Parent = ScrollingFrame
+Spawnspaceloop.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Spawnspaceloop.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Spawnspaceloop.BorderSizePixel = 0
+Spawnspaceloop.Position = UDim2.new(0.507389069, 0, 0.439393938, 0)
+Spawnspaceloop.Size = UDim2.new(0, 82, 0, 28)
+Spawnspaceloop.Font = Enum.Font.SourceSans
+Spawnspaceloop.Text = " Buggy Loop"
+Spawnspaceloop.TextColor3 = Color3.fromRGB(0, 0, 0)
+Spawnspaceloop.TextSize = 14.000
+
+wslight.Name = "wslight"
+wslight.Parent = ScrollingFrame
+wslight.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+wslight.BorderColor3 = Color3.fromRGB(0, 0, 0)
+wslight.BorderSizePixel = 0
+wslight.Position = UDim2.new(0.502463043, 0, 0.5, 0)
+wslight.Size = UDim2.new(0, 82, 0, 28)
+wslight.Font = Enum.Font.SourceSans
+wslight.Text = "Destroy Lighting"
+wslight.TextColor3 = Color3.fromRGB(0, 0, 0)
+wslight.TextSize = 14.000
+
+wsgui.Name = "wsgui"
+wsgui.Parent = ScrollingFrame
+wsgui.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+wsgui.BorderColor3 = Color3.fromRGB(0, 0, 0)
+wsgui.BorderSizePixel = 0
+wsgui.Position = UDim2.new(0.0591132976, 0, 0.559090912, 0)
+wsgui.Size = UDim2.new(0, 82, 0, 28)
+wsgui.Font = Enum.Font.SourceSans
+wsgui.Text = "Destroy GUI"
+wsgui.TextColor3 = Color3.fromRGB(0, 0, 0)
+wsgui.TextSize = 14.000
+
+wstools.Name = "wstools"
+wstools.Parent = ScrollingFrame
+wstools.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+wstools.BorderColor3 = Color3.fromRGB(0, 0, 0)
+wstools.BorderSizePixel = 0
+wstools.Position = UDim2.new(0.502463043, 0, 0.559090912, 0)
+wstools.Size = UDim2.new(0, 82, 0, 28)
+wstools.Font = Enum.Font.SourceSans
+wstools.Text = "Destroy Tools"
+wstools.TextColor3 = Color3.fromRGB(0, 0, 0)
+wstools.TextSize = 14.000
+
+-- Scripts:
+
+local function OMFJZO_fake_script() -- harked.LocalScript 
+	local script = Instance.new('LocalScript', harked)
+
+	script.Parent.Draggable = true
+	script.Parent.Active = true
+end
+coroutine.wrap(OMFJZO_fake_script)()
+local function UVNMJ_fake_script() -- Delete.LocalScript 
+	local script = Instance.new('LocalScript', Delete)
+
+	local player = game.Players.LocalPlayer
+	local mouse = player:GetMouse()
+	local remote = game:GetService("ReplicatedStorage"):WaitForChild("DeleteCar")
+	
+	local tool = Instance.new("Tool")
+	tool.Name = "Delete Tool"
+	tool.RequiresHandle = false
+	tool.CanBeDropped = false
+	
+	tool.Parent = player:WaitForChild("Backpack")
+	
+	tool.Activated:Connect(function()
+		local target = mouse.Target
+		if target then
+			remote:FireServer(target)
+		end
+	end)
+end
+coroutine.wrap(UVNMJ_fake_script)()
+local function DGLPX_fake_script() -- Bald.LocalScript 
+	local script = Instance.new('LocalScript', Bald)
+
+	local Players = game:GetService("Players")
+	local ReplicatedStorage = game:GetService("ReplicatedStorage")
+	
+	local remote = ReplicatedStorage:WaitForChild("DeleteCar")
+	
+	local button = script.Parent
+	local textbox = button.Parent.Parent:WaitForChild("TextBox")
+	
+	local function findPlayer(input)
+		input = input:lower()
+	
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p.Name:lower():sub(1, #input) == input then
+				return p
+			end
+		end
+	end
+	
+	button.MouseButton1Click:Connect(function()
+		local targetPlayer = findPlayer(textbox.Text)
+		if not targetPlayer or not targetPlayer.Character then return end
+	
+		for _, item in ipairs(targetPlayer.Character:GetChildren()) do
+			if item:IsA("Accessory") then
+				remote:FireServer(item)
+			end
+		end
+	end)
+end
+coroutine.wrap(DGLPX_fake_script)()
+local function MIFIRU_fake_script()
+    local script = Instance.new("LocalScript", Kill)
+
+    local Players = game:GetService("Players")
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+    local remote = ReplicatedStorage:WaitForChild("DeleteCar")
+
+    local button = script.Parent
+    local textbox = button.Parent.Parent:WaitForChild("TextBox")
+
+    local function findPlayer(input)
+        input = input:lower():gsub("^%s+", ""):gsub("%s+$", "")
+
+        if input == "" then
+            return nil
+        end
+
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player.Name:lower():sub(1, #input) == input then
+                return player
+            end
+        end
+
+        return nil
+    end
+
+    button.MouseButton1Click:Connect(function()
+        local targetPlayer = findPlayer(textbox.Text)
+
+        if not targetPlayer then
+            warn("Player not found")
+            return
+        end
+
+        local character = targetPlayer.Character
+
+        if not character then
+            warn("Character not loaded")
+            return
+        end
+
+        local head = character:WaitForChild("Head", 3)
+
+        if not head or not head:IsA("BasePart") then
+            warn("Head not found")
+            return
+        end
+
+        remote:FireServer(head)
+    end)
+end
+coroutine.wrap(MIFIRU_fake_script)()
+local function IIBYPFA_fake_script() -- Naked.LocalScript 
+	local script = Instance.new('LocalScript', Naked)
+
+	local Players = game:GetService("Players")
+	local ReplicatedStorage = game:GetService("ReplicatedStorage")
+	
+	local remote = ReplicatedStorage:WaitForChild("DeleteCar")
+	
+	local button = script.Parent
+	local textbox = button.Parent.Parent:WaitForChild("TextBox")
+	
+	local function findPlayer(input)
+		input = input:lower()
+	
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p.Name:lower():sub(1, #input) == input then
+				return p
+			end
+		end
+	end
+	
+	button.MouseButton1Click:Connect(function()
+		local targetPlayer = findPlayer(textbox.Text)
+		if not targetPlayer or not targetPlayer.Character then return end
+	
+		for _, obj in ipairs(targetPlayer.Character:GetDescendants()) do
+			if obj:IsA("Accessory") or obj:IsA("Shirt") or obj:IsA("Pants") then
+				remote:FireServer(obj)
+	
+			elseif obj:IsA("Decal") then
+				if not (obj.Parent and obj.Parent.Name == "Head") then
+					remote:FireServer(obj)
+				end
+			end
+		end
+	end)
+end
+coroutine.wrap(IIBYPFA_fake_script)()
+local function ULIKH_fake_script() -- Ban.LocalScript 
+	local script = Instance.new('LocalScript', Ban)
+
+	local Players = game:GetService("Players")
+	local ReplicatedStorage = game:GetService("ReplicatedStorage")
+	
+	local remote = ReplicatedStorage:WaitForChild("DeleteCar")
+	
+	local button = script.Parent
+	local textbox = button.Parent.Parent:WaitForChild("TextBox")
+	
+	local function findPlayerByName(name)
+		name = name:lower()
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p.Name:lower():sub(1, #name) == name then
+				return p
+			end
+		end
+	end
+	
+	button.MouseButton1Click:Connect(function()
+		task.spawn(function()
+			local targetName = textbox.Text
+			if targetName == "" then return end
+	
+			while textbox.Text == targetName do
+				local targetPlayer = findPlayerByName(targetName)
+	
+				if targetPlayer and targetPlayer ~= Players.LocalPlayer then
+					remote:FireServer(targetPlayer)
+				end
+	
+				task.wait(0.5)
+			end
+		end)
+	end)
+end
+coroutine.wrap(ULIKH_fake_script)()
+local function PTQTIK_fake_script() -- Kick.LocalScript 
+	local script = Instance.new('LocalScript', Kick)
+
+	local Players = game:GetService("Players")
+	local ReplicatedStorage = game:GetService("ReplicatedStorage")
+	
+	local remote = ReplicatedStorage:WaitForChild("DeleteCar")
+	
+	local button = script.Parent
+	local textbox = button.Parent.Parent:WaitForChild("TextBox")
+	
+	local function findPlayer(input)
+		input = input:lower()
+	
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p.Name:lower():sub(1, #input) == input then
+				return p
+			end
+		end
+	end
+	
+	button.MouseButton1Click:Connect(function()
+		local targetPlayer = findPlayer(textbox.Text)
+		if targetPlayer then
+			remote:FireServer(targetPlayer)
+		end
+	end)
+end
+coroutine.wrap(PTQTIK_fake_script)()
+local function WIAXGY_fake_script() -- Ragdoll.LocalScript 
+	local script = Instance.new('LocalScript', Ragdoll)
+
+	local Players = game:GetService("Players")
+	local ReplicatedStorage = game:GetService("ReplicatedStorage")
+	
+	local remote = ReplicatedStorage:WaitForChild("DeleteCar")
+	
+	local button = script.Parent
+	local textbox = button.Parent.Parent:WaitForChild("TextBox")
+	
+	local function findPlayer(input)
+		input = input:lower()
+	
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p.Name:lower():sub(1, #input) == input then
+				return p
+			end
+		end
+	end
+	
+	button.MouseButton1Click:Connect(function()
+		local targetPlayer = findPlayer(textbox.Text)
+		if not targetPlayer or not targetPlayer.Character then return end
+	
+		local humanoid = targetPlayer.Character:FindFirstChildOfClass("Humanoid")
+		if humanoid then
+			remote:FireServer(humanoid)
+		end
+	end)
+end
+coroutine.wrap(WIAXGY_fake_script)()
+local function DQDZ_fake_script() -- Noanims.LocalScript 
+	local script = Instance.new('LocalScript', Noanims)
+
+	local Players = game:GetService("Players")
+	local ReplicatedStorage = game:GetService("ReplicatedStorage")
+	
+	local remote = ReplicatedStorage:WaitForChild("DeleteCar")
+	
+	local button = script.Parent
+	local textbox = button.Parent.Parent:WaitForChild("TextBox")
+	
+	local function findPlayer(input)
+		input = input:lower()
+	
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p.Name:lower():sub(1, #input) == input then
+				return p
+			end
+		end
+	end
+	
+	button.MouseButton1Click:Connect(function()
+		local targetPlayer = findPlayer(textbox.Text)
+		if not targetPlayer or not targetPlayer.Character then return end
+	
+		local humanoid = targetPlayer.Character:FindFirstChild("Animate")
+		if humanoid then
+			remote:FireServer(humanoid)
+		end
+	end)
+end
+coroutine.wrap(DQDZ_fake_script)()
+local function ODIHEOF_fake_script() -- notools.LocalScript 
+	local script = Instance.new('LocalScript', notools)
+
+	local Players = game:GetService("Players")
+	local ReplicatedStorage = game:GetService("ReplicatedStorage")
+	
+	local remote = ReplicatedStorage:WaitForChild("DeleteCar")
+	
+	local button = script.Parent
+	local textbox = button.Parent.Parent:WaitForChild("TextBox")
+	
+	local function findPlayer(input)
+		input = input:lower()
+	
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p.Name:lower():sub(1, #input) == input then
+				return p
+			end
+		end
+	end
+	
+	button.MouseButton1Click:Connect(function()
+		local targetPlayer = findPlayer(textbox.Text)
+		if not targetPlayer then return end
+	
+		local backpack = targetPlayer:FindFirstChild("Backpack")
+		if not backpack then return end
+	
+		for _, item in ipairs(backpack:GetChildren()) do
+			remote:FireServer(item)
+		end
+	end)
+end
+coroutine.wrap(ODIHEOF_fake_script)()
+local function TLXX_fake_script() -- nolimbs.LocalScript 
+	local script = Instance.new('LocalScript', nolimbs)
+
+	local Players = game:GetService("Players")
+	
+	local button = script.Parent
+	local textbox = button.Parent.Parent:WaitForChild("TextBox")
+	
+	local function findPlayer(input)
+		input = input:lower()
+	
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p.Name:lower():sub(1, #input) == input then
+				return p
+			end
+		end
+	end
+	
+	local function cleanCharacter(char)
+		if char:FindFirstChild("RightUpperLeg") then
+			for _, obj in ipairs(char:GetDescendants()) do
+				if obj:IsA("MeshPart") then
+					if obj.Name ~= "Head" and obj.Name ~= "UpperTorso" and obj.Name ~= "LowerTorso" then
+						obj:Destroy()
+					end
+				end
+			end
+		else
+			local limbs = {
+				"Left Leg",
+				"Right Leg",
+				"Left Arm",
+				"Right Arm"
+			}
+	
+			for _, name in ipairs(limbs) do
+				local limb = char:FindFirstChild(name)
+				if limb then
+					limb:Destroy()
+				end
+			end
+		end
+	end
+	
+	button.MouseButton1Click:Connect(function()
+		local targetPlayer = findPlayer(textbox.Text)
+		if not targetPlayer or not targetPlayer.Character then return end
+	
+		cleanCharacter(targetPlayer.Character)
+	end)
+end
+coroutine.wrap(TLXX_fake_script)()
+local function BGSOX_fake_script() -- punish.LocalScript 
+	local script = Instance.new('LocalScript', punish)
+
+	local Players = game:GetService("Players")
+	local ReplicatedStorage = game:GetService("ReplicatedStorage")
+	
+	local remote = ReplicatedStorage:WaitForChild("DeleteCar")
+	
+	local button = script.Parent
+	local textbox = button.Parent.Parent:WaitForChild("TextBox")
+	
+	local function findPlayer(input)
+		input = input:lower()
+	
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p.Name:lower():sub(1, #input) == input then
+				return p
+			end
+		end
+	end
+	
+	local function sendForDeletion(char)
+		local function send(obj)
+			if obj then
+				remote:FireServer(obj)
+			end
+		end
+	
+		local hrp = char:FindFirstChild("HumanoidRootPart")
+		if hrp then
+			send(hrp)
+		end
+	
+		if char:FindFirstChild("RightUpperLeg") then
+			for _, obj in ipairs(char:GetDescendants()) do
+				if obj:IsA("MeshPart") then
+					send(obj)
+				end	
+			end
+		else
+			local parts = {
+				"Head",
+				"Torso",
+				"Left Leg",
+				"Right Leg",
+				"Left Arm",
+				"Right Arm"
+			}
+	
+			for _, name in ipairs(parts) do
+				local part = char:FindFirstChild(name)
+				if part then
+					send(part)
+				end
+			end
+		end
+	end
+	
+	button.MouseButton1Click:Connect(function()
+		local targetPlayer = findPlayer(textbox.Text)
+		if not targetPlayer or not targetPlayer.Character then return end
+	
+		sendForDeletion(targetPlayer.Character)
+	end)
+end
+coroutine.wrap(BGSOX_fake_script)()
+local function KULJGKI_fake_script() -- Spawnship.LocalScript 
+	local script = Instance.new('LocalScript', Spawnship)
+
+	script.Parent.Activated:Connect(function()
+		local args = {
+			"Our Rocket Ship"
+		}
+		game:GetService("ReplicatedStorage"):WaitForChild("SpawnCar"):FireServer(unpack(args))
+	end)
+end
+coroutine.wrap(KULJGKI_fake_script)()
+local function NMJVD_fake_script() -- SpawnshipLoop.LocalScript 
+	local script = Instance.new('LocalScript', SpawnshipLoop)
+
+	local running = false
+	
+	script.Parent.Activated:Connect(function()
+		running = not running
+	
+		while running do
+			wait(0.3)
+			local args = {
+				"Our Rocket Ship"
+			}
+			game:GetService("ReplicatedStorage"):WaitForChild("SpawnCar"):FireServer(unpack(args))
+		end
+	end)
+end
+coroutine.wrap(NMJVD_fake_script)()
+local function XLAP_fake_script() -- ws.LocalScript 
+	local script = Instance.new('LocalScript', ws)
+
+	local Players = game:GetService("Players")
+	local ReplicatedStorage = game:GetService("ReplicatedStorage")
+	local remote = ReplicatedStorage:WaitForChild("DeleteCar")
+	
+	local button = script.Parent
+	
+	button.MouseButton1Click:Connect(function()
+		for _, v in ipairs(workspace:GetChildren()) do
+			if v:IsA("Model") then
+				local player = Players:FindFirstChild(v.Name)
+				if not player then
+					remote:FireServer(v)
+				end
+			elseif not v:IsA("SpawnLocation") then
+				remote:FireServer(v)
+			end
+		end
+	end)
+end
+coroutine.wrap(XLAP_fake_script)()
+local function RCRYF_fake_script() -- wspow.LocalScript 
+	local script = Instance.new('LocalScript', wspow)
+
+	local ReplicatedStorage = game:GetService("ReplicatedStorage")
+	local remote = ReplicatedStorage:WaitForChild("DeleteCar")
+	
+	local button = script.Parent
+	
+	button.MouseButton1Click:Connect(function()
+		for _, v in ipairs(game:GetDescendants()) do
+			remote:FireServer(v)
+		end
+	end)
+end
+coroutine.wrap(RCRYF_fake_script)()
+local function YAEKRI_fake_script() -- Spawnspace.LocalScript 
+	local script = Instance.new('LocalScript', Spawnspace)
+
+	script.Parent.Activated:Connect(function()
+		local args = {
+			"Space Buggy"
+		}
+		game:GetService("ReplicatedStorage"):WaitForChild("SpawnCar"):FireServer(unpack(args))
+	end)
+end
+coroutine.wrap(YAEKRI_fake_script)()
+local function SXDX_fake_script() -- Spawnspaceloop.LocalScript 
+	local script = Instance.new('LocalScript', Spawnspaceloop)
+
+	local running = false
+	
+	script.Parent.Activated:Connect(function()
+		running = not running
+	
+		while running do
+			wait(0.3)
+			local args = {
+				"Space Buggy"
+			}
+			game:GetService("ReplicatedStorage"):WaitForChild("SpawnCar"):FireServer(unpack(args))
+		end
+	end)
+end
+coroutine.wrap(SXDX_fake_script)()
+local function KLVL_fake_script() -- wslight.LocalScript 
+	local script = Instance.new('LocalScript', wslight)
+
+	local Lighting = game:GetService("Lighting")
+	
+	local button = script.Parent
+	
+	button.MouseButton1Click:Connect(function()
+		for _, v in ipairs(Lighting:GetDescendants()) do
+			v:Destroy()
+		end
+	end)
+end
+coroutine.wrap(KLVL_fake_script)()
+local function MGIKORC_fake_script() -- wsgui.LocalScript 
+	local script = Instance.new('LocalScript', wsgui)
+
+	local Players = game:GetService("Players")
+	local StarterGui = game:GetService("StarterGui")
+	
+	local button = script.Parent
+	
+	local function cleanGui(container)
+		for _, v in ipairs(container:GetDescendants()) do
+			if not (v:IsA("ScreenGui") and v.Name == "mercuryGUI") then
+				v:Destroy()
+			end
+		end
+	end
+	
+	button.MouseButton1Click:Connect(function()
+		cleanGui(StarterGui)
+	
+		for _, player in ipairs(Players:GetPlayers()) do
+			local pg = player:FindFirstChild("PlayerGui")
+			if pg then
+				cleanGui(pg)
+			end
+		end
+	end)
+end
+coroutine.wrap(MGIKORC_fake_script)()
+local function ORMTB_fake_script() -- wstools.LocalScript 
+	local script = Instance.new('LocalScript', wstools)
+
+	local Players = game:GetService("Players")
+	local StarterPack = game:GetService("StarterPack")
+	
+	local button = script.Parent
+	
+	local function clean(container)
+		for _, v in ipairs(container:GetDescendants()) do
+			if not (v:IsA("Tool") and v.Name == "Delete Tool") then
+				v:Destroy()
+			end
+		end
+	end
+	
+	button.MouseButton1Click:Connect(function()
+		clean(StarterPack)
+	
+		for _, player in ipairs(Players:GetPlayers()) do
+			local backpack = player:FindFirstChild("Backpack")
+			if backpack then
+				clean(backpack)
+			end
+		end
+	end)
+end
+coroutine.wrap(ORMTB_fake_script)()
