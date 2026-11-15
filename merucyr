@@ -1,0 +1,344 @@
+
+-- HARKED MERCURY
+-- Single-script executor version
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Lighting = game:GetService("Lighting")
+local StarterGui = game:GetService("StarterGui")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local DeleteCar = ReplicatedStorage:WaitForChild("DeleteCar", 10)
+local SpawnCar = ReplicatedStorage:WaitForChild("SpawnCar", 10)
+
+-- Remove previous GUI
+local old = playerGui:FindFirstChild("mercuryGUI")
+if old then
+    old:Destroy()
+end
+
+-- Settings
+local LOOP_DELAY = 0.3
+local MAX_LOOP_SPAWNS = 30
+
+local shipRunning = false
+local buggyRunning = false
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "mercuryGUI"
+gui.ResetOnSpawn = false
+gui.DisplayOrder = 999
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+gui.Parent = playerGui
+
+local main = Instance.new("Frame")
+main.Name = "harked"
+main.Size = UDim2.fromOffset(260, 390)
+main.Position = UDim2.new(0.04, 0, 0.18, 0)
+main.BackgroundColor3 = Color3.fromRGB(137, 138, 138)
+main.BackgroundTransparency = 0.2
+main.BorderSizePixel = 2
+main.BorderColor3 = Color3.fromRGB(255, 255, 255)
+main.Active = true
+main.Draggable = true
+main.Parent = gui
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 42)
+title.BackgroundTransparency = 1
+title.Text = "Harked Mercury"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.TextScaled = true
+title.Font = Enum.Font.SourceSansBold
+title.Parent = main
+
+local status = Instance.new("TextLabel")
+status.Position = UDim2.fromOffset(8, 42)
+status.Size = UDim2.new(1, -16, 0, 25)
+status.BackgroundTransparency = 1
+status.Text = "Ready"
+status.TextColor3 = Color3.new(1, 1, 1)
+status.TextSize = 14
+status.Parent = main
+
+local scrolling = Instance.new("ScrollingFrame")
+scrolling.Position = UDim2.fromOffset(8, 72)
+scrolling.Size = UDim2.new(1, -16, 1, -82)
+scrolling.BackgroundTransparency = 1
+scrolling.BorderSizePixel = 0
+scrolling.ScrollBarThickness = 5
+scrolling.CanvasSize = UDim2.fromOffset(0, 0)
+scrolling.AutomaticCanvasSize = Enum.AutomaticSize.Y
+scrolling.Parent = main
+
+local layout = Instance.new("UIGridLayout")
+layout.CellSize = UDim2.fromOffset(112, 34)
+layout.CellPadding = UDim2.fromOffset(8, 7)
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+layout.Parent = scrolling
+
+local function setStatus(message)
+    status.Text = message
+end
+
+local function makeButton(name, callback)
+    local button = Instance.new("TextButton")
+    button.Name = name
+    button.Text = name
+    button.BackgroundColor3 = Color3.fromRGB(245, 245, 245)
+    button.BorderSizePixel = 0
+    button.TextColor3 = Color3.fromRGB(20, 20, 20)
+    button.TextSize = 14
+    button.Font = Enum.Font.SourceSans
+    button.Parent = scrolling
+
+    button.MouseButton1Click:Connect(function()
+        local success, err = pcall(callback)
+
+        if success then
+            setStatus(name .. ": done")
+        else
+            setStatus(name .. ": " .. tostring(err))
+            warn("[Mercury] " .. tostring(err))
+        end
+    end)
+
+    return button
+end
+
+local function isPlayerCharacter(object)
+    for _, target in ipairs(Players:GetPlayers()) do
+        if target.Character == object then
+            return true
+        end
+    end
+    return false
+end
+
+-- DELETE TOOL
+makeButton("Delete Tool", function()
+    if not DeleteCar then
+        error("DeleteCar remote not found")
+    end
+
+    local mouse = player:GetMouse()
+
+    local tool = Instance.new("Tool")
+    tool.Name = "Delete Tool"
+    tool.RequiresHandle = false
+    tool.CanBeDropped = false
+
+    tool.Activated:Connect(function()
+        local target = mouse.Target
+
+        if not target then
+            return
+        end
+
+        local model = target:FindFirstAncestorOfClass("Model")
+
+        if model and isPlayerCharacter(model) then
+            setStatus("Cannot target player characters")
+            return
+        end
+
+        DeleteCar:FireServer(target)
+    end)
+
+    tool.Parent = player:WaitForChild("Backpack")
+end)
+
+-- DESTROY WORKSPACE (WEAK)
+-- Uses DeleteCar on direct Workspace children only.
+makeButton("Destroy Workspace", function()
+    if not DeleteCar then
+        error("DeleteCar remote not found")
+    end
+
+    local count = 0
+
+    for _, object in ipairs(workspace:GetChildren()) do
+        if object ~= workspace.Terrain
+            and object ~= workspace.CurrentCamera
+            and not object:IsA("SpawnLocation")
+            and not isPlayerCharacter(object) then
+
+            DeleteCar:FireServer(object)
+            count += 1
+            task.wait(0.1)
+        end
+    end
+
+    setStatus("Workspace requests sent: " .. count)
+end)
+
+-- LOCAL WORKSPACE CLEANUP
+-- Only changes what this client sees.
+makeButton("Local Workspace Clean", function()
+    local count = 0
+
+    for _, object in ipairs(workspace:GetChildren()) do
+        if object ~= workspace.Terrain
+            and object ~= workspace.CurrentCamera
+            and not object:IsA("SpawnLocation")
+            and not isPlayerCharacter(object) then
+
+            object:Destroy()
+            count += 1
+        end
+    end
+
+    setStatus("Local objects removed: " .. count)
+end)
+
+-- DESTROY LIGHTING
+makeButton("Destroy Lighting", function()
+    for _, object in ipairs(Lighting:GetDescendants()) do
+        object:Destroy()
+    end
+
+    setStatus("Lighting cleared locally")
+end)
+
+-- DESTROY GUI
+makeButton("Destroy GUI", function()
+    for _, object in ipairs(playerGui:GetChildren()) do
+        if object ~= gui then
+            object:Destroy()
+        end
+    end
+
+    setStatus("Your PlayerGui cleared")
+end)
+
+-- DESTROY TOOLS
+makeButton("Destroy Tools", function()
+    local backpack = player:FindFirstChildOfClass("Backpack")
+    local character = player.Character
+    local count = 0
+
+    if backpack then
+        for _, object in ipairs(backpack:GetChildren()) do
+            if object:IsA("Tool") and object.Name ~= "Delete Tool" then
+                object:Destroy()
+                count += 1
+            end
+        end
+    end
+
+    if character then
+        for _, object in ipairs(character:GetChildren()) do
+            if object:IsA("Tool") and object.Name ~= "Delete Tool" then
+                object:Destroy()
+                count += 1
+            end
+        end
+    end
+
+    setStatus("Your tools removed: " .. count)
+end)
+
+-- SPAWN VEHICLES
+local function spawnVehicle(vehicleName)
+    if not SpawnCar then
+        error("SpawnCar remote not found")
+    end
+
+    SpawnCar:FireServer(vehicleName)
+end
+
+makeButton("Spawn Ship", function()
+    spawnVehicle("Our Rocket Ship")
+end)
+
+makeButton("Spawn Space Buggy", function()
+    spawnVehicle("Space Buggy")
+end)
+
+-- SHIP LOOP
+local shipButton
+
+shipButton = makeButton("Ship Loop: OFF", function()
+    shipRunning = not shipRunning
+
+    if shipRunning then
+        shipButton.Text = "Ship Loop: ON"
+
+        task.spawn(function()
+            local count = 0
+
+            while shipRunning and count < MAX_LOOP_SPAWNS do
+                spawnVehicle("Our Rocket Ship")
+                count += 1
+                task.wait(LOOP_DELAY)
+            end
+
+            shipRunning = false
+            shipButton.Text = "Ship Loop: OFF"
+            setStatus("Ship loop stopped")
+        end)
+    else
+        shipButton.Text = "Ship Loop: OFF"
+    end
+end)
+
+-- BUGGY LOOP
+local buggyButton
+
+buggyButton = makeButton("Buggy Loop: OFF", function()
+    buggyRunning = not buggyRunning
+
+    if buggyRunning then
+        buggyButton.Text = "Buggy Loop: ON"
+
+        task.spawn(function()
+            local count = 0
+
+            while buggyRunning and count < MAX_LOOP_SPAWNS do
+                spawnVehicle("Space Buggy")
+                count += 1
+                task.wait(LOOP_DELAY)
+            end
+
+            buggyRunning = false
+            buggyButton.Text = "Buggy Loop: OFF"
+            setStatus("Buggy loop stopped")
+        end)
+    else
+        buggyButton.Text = "Buggy Loop: OFF"
+    end
+end)
+
+-- STOP BOTH LOOPS
+makeButton("Stop All Loops", function()
+    shipRunning = false
+    buggyRunning = false
+
+    shipButton.Text = "Ship Loop: OFF"
+    buggyButton.Text = "Buggy Loop: OFF"
+
+    setStatus("All loops stopped")
+end)
+
+-- Close button
+local close = Instance.new("TextButton")
+close.Size = UDim2.fromOffset(28, 28)
+close.Position = UDim2.new(1, -32, 0, 7)
+close.Text = "X"
+close.TextSize = 16
+close.TextColor3 = Color3.new(1, 1, 1)
+close.BackgroundColor3 = Color3.fromRGB(170, 45, 45)
+close.BorderSizePixel = 0
+close.Parent = main
+
+close.MouseButton1Click:Connect(function()
+    shipRunning = false
+    buggyRunning = false
+    gui:Destroy()
+end)
+
+print("[Mercury] Harked Mercury loaded successfully")
+setStatus("Ready - Mercury loaded")
